@@ -2,7 +2,7 @@
 import random
 import os
 from collections import Counter
-from typing import Optional
+from typing import Optional, List, Dict, Tuple
 
 from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_tokenizer, sentencepiece_numericalizer
@@ -12,7 +12,7 @@ from random import shuffle
 class Post:
     """A single social media data instance"""
 
-    def __init__(self, words: list[str], langs: list[str]):
+    def __init__(self, words: List[str], langs: List[str]):
         self.words = words
         self.langs = langs
 
@@ -23,7 +23,7 @@ class Post:
         return len(self.words)
 
 
-def gen_sentpiece_model(training_data: list[Post]):
+def gen_sentpiece_model(training_data: List[Post]):
     sp_filepath = 'sp_source_data.txt'
     with open(sp_filepath, 'a') as f:
         for post in training_data:
@@ -33,7 +33,7 @@ def gen_sentpiece_model(training_data: list[Post]):
     return sp_model
 
 
-def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[Post]]:
+def create_datasplits(data_filepath: str) -> Tuple[List[Post], List[Post], List[Post]]:
     files = [load_posts(f'{data_filepath}/{file}') for file in os.listdir(data_filepath)]
 
     train, dev, test = [], [], []
@@ -53,7 +53,7 @@ def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[
     return train, dev, test
 
 
-def load_posts(filepath: Optional[str]) -> list[Post]:
+def load_posts(filepath: Optional[str]) -> List[Post]:
     all_data = []
     words, langs = [], []
 
@@ -74,11 +74,11 @@ def load_posts(filepath: Optional[str]) -> list[Post]:
 
 class LIDDataset(Dataset):
     def __init__(self, dataset, sp_model):
-        self.data: list[Post] = dataset
-        self.subword_data: list[Post] = []
+        self.data: List[Post] = dataset
+        self.subword_data: List[Post] = []
         self.sp_tokenizer = sentencepiece_tokenizer(sp_model)
-        self.subword_to_idx: dict[str, int] = sentencepiece_numericalizer(sp_model)
-        self.lang_to_idx: dict[str, int] = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3,
+        self.subword_to_idx: Dict[str, int] = sentencepiece_numericalizer(sp_model)
+        self.lang_to_idx: Dict[str, int] = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3,
                                             'hi': 4, 'ne': 5, 'en': 6, 'acro': 7, 'ne+bn_suffix': 8}
         self.weight_dict = self.make_weight_dict()
 

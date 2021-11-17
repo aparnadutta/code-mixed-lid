@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 
 from lid_model import LIDModel
-from language_dataset import LIDDataset
+from language_dataset import LIDDataset, create_datasplits
 from typing import Optional
 
 
@@ -30,13 +30,13 @@ def idx_maps(path) -> (dict, dict):
     return lang_to_idx, char_to_idx, weight_dict
 
 
-def train_model(exp, data_set, test_dataset, LIDModel: 'LIDModel', training_params, weight_dict: Optional[dict] = None):
+def train_model(exp, data_set, test_dataset, lidmodel: 'LIDModel', training_params, weight_dict: Optional[dict] = None):
     optimizer, weight_decay, lr, batch_size, epochs = training_params
     if optimizer.strip().lower() == "sgd":
-        opti = optim.SGD(LIDModel.parameters(), lr=lr, weight_decay=weight_decay)
+        opti = optim.SGD(lidmodel.parameters(), lr=lr, weight_decay=weight_decay)
     else:
-        opti = optim.AdamW(params=LIDModel.parameters())
-    LIDModel.fit(data_set, test_dataset, opti, epochs=epochs, weight_dict=weight_dict,
+        opti = optim.AdamW(params=lidmodel.parameters())
+    lidmodel.fit(data_set, test_dataset, opti, epochs=epochs, weight_dict=weight_dict,
                  experiment=exp, batch_size=batch_size)
 
 

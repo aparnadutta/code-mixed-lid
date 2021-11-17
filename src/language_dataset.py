@@ -28,7 +28,7 @@ def gen_sentpiece_model(training_data: List[Post]):
     with open(sp_filepath, 'a') as f:
         for post in training_data:
             f.write(' '.join(post.words) + '\n')
-    gen_model = generate_sp_model(sp_filepath, vocab_size=1000, model_prefix='spm_user')
+    generate_sp_model(sp_filepath, vocab_size=1000, model_prefix='spm_user')
     sp_model = load_sp_model('spm_user.model')
     return sp_model
 

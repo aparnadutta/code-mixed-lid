@@ -40,7 +40,7 @@ def train_model(exp, data_set, test_dataset, LIDModel: 'LIDModel', training_para
                  experiment=exp, batch_size=batch_size)
 
 
-# todo edit all of this
+# TODO edit all of this
 def run_training(exp, model, maps, training_params, to_train=True):
     # Load train data set
 

@@ -5,8 +5,9 @@ from indictrans import Transliterator
 # trn = Transliterator(source='eng', target='ben', build_lookup=True)
 
 
+# TODO: called in run_training() in run_language_identifier
 
-# sp_model = gen_sentpiece_model(train)
+sp_model = gen_sentpiece_model(train)
 sp_model = load_sp_model('spm_user.model')
 train_dataset = LIDDataset(train, sp_model)
 

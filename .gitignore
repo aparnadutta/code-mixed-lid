@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+.idea/
+spm_user.model
+spm_user.vocab
+sp_source_data.txt

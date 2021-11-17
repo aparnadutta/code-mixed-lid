@@ -133,3 +133,4 @@ dmypy.json
 spm_user.model
 spm_user.vocab
 sp_source_data.txt
+.vscode/

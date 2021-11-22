@@ -25,12 +25,12 @@ class Post:
 
 
 def gen_sentpiece_model(training_data: List[Post]):
-    sp_filepath = 'sp_source_data.txt'
+    sp_filepath = './sp_source_data.txt'
     with open(sp_filepath, 'a') as f:
         for post in training_data:
             f.write(' '.join(post.words) + '\n')
-    generate_sp_model(sp_filepath, vocab_size=1000, model_prefix='spm_user')
-    sp_model = load_sp_model('spm_user.model')
+    generate_sp_model(sp_filepath, vocab_size=1000, model_prefix='./spm_user')
+    sp_model = load_sp_model('./spm_user.model')
     return sp_model
 
 
@@ -74,11 +74,11 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
 
 
 class LIDDataset(Dataset):
-    def __init__(self, dataset, sp_model):
+    def __init__(self, dataset):
         self.data: List[Post] = dataset
         self.subword_data: List[Post] = []
-        self.sp_tokenizer = sentencepiece_tokenizer(sp_model)
-        self.subword_to_idx: Dict[str, int] = sentencepiece_numericalizer(sp_model)
+        self.sp_tokenizer = sentencepiece_tokenizer(load_sp_model('./spm_user.model'))
+        self.subword_to_idx: Dict[str, int] = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
         self.lang_to_idx: Dict[str, int] = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3,
                                             'hi': 4, 'ne': 5, 'en': 6, 'acro': 7, 'ne+bn_suffix': 8}
         self.weight_dict = self.make_weight_dict()

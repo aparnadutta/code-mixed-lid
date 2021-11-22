@@ -31,18 +31,20 @@ class LSTMLIDModel(LIDModel):
         outputs = self.linear(outputs)
         return outputs.squeeze()
 
-    def save_model(self, exp, fileending=""):
+    def save_model(self, fileending=""):
         """Saves a dict containing statedict and other required model parameters and adds it as artifact
         Arguments:
         """
         tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".pth")
-        required_model_information = {'char_to_idx': self.char_to_idx, 'lang_to_idx': self.lang_to_idx,
-                                      'model_state_dict': self.state_dict(), 'embedding_dim': self.embedding_dim,
+        required_model_information = {'subword_to_idx': self.subword_to_idx,
+                                      'lang_to_idx': self.lang_to_idx,
+                                      'model_state_dict': self.state_dict(),
+                                      'embedding_dim': self.embedding_dim,
                                       'hidden_dim': self.hidden_dim,
                                       'layers': self.num_layers}
 
         torch.save(required_model_information, tmpf.name)
         fname = "trained_LID_model" + fileending + ".pth"
-        exp.add_artifact(tmpf.name, fname)
+        # exp.add_artifact(tmpf.name, fname)
         tmpf.close()
         os.unlink(tmpf.name)

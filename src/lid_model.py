@@ -72,9 +72,7 @@ class LIDModel(nn.Module):
         self.train()
         return arr
 
-    def fit(self, train_dataset, dev_dataset, optimizer, epochs=3, batch_size=64,
-            weight_dict=None,
-            experiment=None):
+    def fit(self, train_dataset, dev_dataset, optimizer, epochs=3, batch_size=64, weight_dict=None):
         test_sampler = BatchSampler(batch_size, dev_dataset)
         dataloader_dev = DataLoader(dev_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=test_sampler)
         weights = None
@@ -128,11 +126,10 @@ class LIDModel(nn.Module):
             print(f"Average total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)
-            if experiment is not None:
-                self.save_model(experiment, "E" + str(epoch))
+            self.save_model("E" + str(epoch))
             print("Time spent in epoch {0}: {1:.2f} ".format(epoch + 1, time.time() - epoch_start_time))
 
-    def save_model(self, exp, fileending=""):
+    def save_model(self, fileending=""):
         """Saves a pytorch model fully and adds it as artifact
         Arguments:
             pred_prob  -- list or numpy array to save as .npy file
@@ -143,6 +140,6 @@ class LIDModel(nn.Module):
 
         torch.save(required_model_information, tmpf.name)
         fname = "trained_model_dict" + fileending + ".pth"
-        exp.add_artifact(tmpf.name, fname)
+        # exp.add_artifact(tmpf.name, fname)
         tmpf.close()
         os.unlink(tmpf.name)

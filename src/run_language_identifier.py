@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 from torch import optim
 from torch.utils.data import DataLoader
 import numpy as np
@@ -22,48 +25,43 @@ def test_model(data_set, model):
     return pred_prob
 
 
-def idx_maps(path) -> (dict, dict):
-    full_dataset = LIDDataset(path)
-    lang_to_idx = full_dataset.lang_to_idx
-    char_to_idx = full_dataset.char_to_idx
-    weight_dict = full_dataset.weight_dict
-    return lang_to_idx, char_to_idx, weight_dict
+def save_probs(pred_prob, file_ending=""):
+    """Saves probabilities as a .npy file and adds it as artifact
+    Arguments:
+        pred_prob  -- list or numpy array to save as .npy file
+    """
+    tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".npy")
+    np.save(tmpf.name, pred_prob)
+    fname = "prediction_probabilities" + file_ending + ".npy"
+    tmpf.close()
+    os.unlink(tmpf.name)
 
 
-def train_model(exp, data_set, test_dataset, lidmodel: 'LIDModel', training_params, weight_dict: Optional[dict] = None):
+def train_model(data_set, test_dataset, lidmodel: 'LIDModel', training_params, weight_dict: Optional[dict] = None):
     optimizer, weight_decay, lr, batch_size, epochs = training_params
     if optimizer.strip().lower() == "sgd":
         opti = optim.SGD(lidmodel.parameters(), lr=lr, weight_decay=weight_decay)
     else:
         opti = optim.AdamW(params=lidmodel.parameters())
-    lidmodel.fit(data_set, test_dataset, opti, epochs=epochs, weight_dict=weight_dict,
-                 experiment=exp, batch_size=batch_size)
+    lidmodel.fit(data_set, test_dataset, opti, epochs=epochs, weight_dict=weight_dict, batch_size=batch_size)
 
 
-# TODO edit all of this
-def run_training(exp, model, maps, training_params, to_train=True):
-    # Load train data set
-
+def run_training(model, training_params, to_train=True):
     data_filepath = './data'
     train, dev, test = create_datasplits(data_filepath)
-    print("Loading test data")
-    test_dataset = load_test_folds()
-    lang_to_idx, char_to_idx, weight_dict = maps
-    test_dataset.char_to_idx = char_to_idx
-    test_dataset.lang_to_idx = lang_to_idx
-    test_dataset_converted = PyTorchLIDDataSet(test_dataset)
+
+    train_dataset = LIDDataset(train)
+    test_dataset = LIDDataset(test)
+
+    weight_dict = train_dataset.weight_dict
+
     if to_train:
-        print("Loading train data")
-        train_dataset_normal = load_training_folds()
-        train_dataset_normal.char_to_idx = char_to_idx
-        train_dataset_normal.lang_to_idx = lang_to_idx
-        train_dataset = PyTorchLIDDataSet(train_dataset_normal)
         print("Training model")
-        train_model(exp, train_dataset, test_dataset_converted, model, weight_dict=weight_dict, training_params=training_params)
+        train_model(train_dataset, test_dataset, model, training_params=training_params, weight_dict=weight_dict)
+
     print("Testing model")
-    eval_data = test_model(data_set=test_dataset, model=model)
+    eval_data = test_model(data_set=test, model=model)
     print("Saving model")
-    model.save_model(exp)
+    model.save_model()
     print("Saving predictions and lang_to_idx")
-    save_probs(eval_data, exp)
-    save_lang_to_idx(test_dataset.lang_to_idx, exp)
+    save_probs(eval_data)

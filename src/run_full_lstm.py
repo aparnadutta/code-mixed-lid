@@ -29,7 +29,7 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     lang_to_idx = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3, 'hi': 4, 'ne': 5, 'en': 6, 'acro': 7,
                    'ne+bn_suffix': 8}
 
-    LSTM_model = load_LSTM_model(pretrained_model_path=pretrained_model,
+    lstm_model = load_LSTM_model(pretrained_model_path=pretrained_model,
                                  subword_to_idx=subword_to_idx,
                                  lang_to_idx=lang_to_idx,
                                  hidden_dim=HIDDEN_DIM,
@@ -37,7 +37,7 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
                                  num_lstm_layers=NUM_LSTM_LAYERS)
     to_train = pretrained_model is None
 
-    run_training(LSTM_model, training_params, to_train)
+    run_training(lstm_model, training_params, to_train)
 
 
 PRETRAINED_MODEL = None

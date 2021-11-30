@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 
 from lid_model import LIDModel
-from language_dataset import LIDDataset, create_datasplits
+from language_dataset import LIDDataset, PyTorchLIDDataSet, create_datasplits
 from typing import Optional
 
 
@@ -53,14 +53,17 @@ def run_training(model, training_params, to_train=True):
     train_dataset = LIDDataset(train)
     test_dataset = LIDDataset(test)
 
+    train_data_converted = PyTorchLIDDataSet(train_dataset)
+    test_data_converted = PyTorchLIDDataSet(test_dataset)
     weight_dict = train_dataset.weight_dict
 
     if to_train:
         print("Training model")
-        train_model(train_dataset, test_dataset, model, training_params=training_params, weight_dict=weight_dict)
+        train_model(train_data_converted, test_data_converted, model,
+                    training_params=training_params, weight_dict=weight_dict)
 
     print("Testing model")
-    eval_data = test_model(data_set=test, model=model)
+    eval_data = test_model(data_set=test_dataset, model=model)
     print("Saving model")
     model.save_model()
     print("Saving predictions and lang_to_idx")

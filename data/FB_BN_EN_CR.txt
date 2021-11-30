@@ -207,7 +207,7 @@ obosyoi	bn	G_N
 deben	bn	G_V
 ..	univ	G_X
 so	en	G_R
-chapless	mixed	G_J
+chapless	en	G_J
 ...	univ	G_X
 
 ei	bn	G_PRP

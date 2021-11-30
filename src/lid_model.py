@@ -1,4 +1,3 @@
-import math
 import os
 import tempfile
 import time
@@ -7,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
-from language_dataset import BatchSampler
+from language_dataset import BatchSampler, VOCAB_SIZE
 
 
 def correct_predictions(scores, labels):
@@ -23,12 +22,12 @@ def argmax(vec):
 
 class LIDModel(nn.Module):
     def __init__(self, subword_to_idx, lang_to_idx):
-        # Subword_to_idx should be a map that converts a subword to a number
+        # Subword_to_idx is a function that converts a subword to a number, and converts unknown tokens to 0
         # Lang_to_idx should be a map that converts a language to a number
         self.subword_to_idx = subword_to_idx
         self.lang_to_idx = lang_to_idx
         self.idx_to_lang = dict([(value, key) for key, value in lang_to_idx.items()])
-        self.vocab_size = len(subword_to_idx)
+        self.vocab_size = VOCAB_SIZE
         self.lang_set_size = len(lang_to_idx)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         super(LIDModel, self).__init__()
@@ -83,7 +82,7 @@ class LIDModel(nn.Module):
             self.train()
             avg_total_loss, num_correct_preds = 0, 0
             epoch_start_time = time.time()
-            train_dataset.randomize_data()
+
             sampler = BatchSampler(batch_size, train_dataset)
             dataloader_train = DataLoader(train_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=sampler)
             # Logit is the pre-softmax scores

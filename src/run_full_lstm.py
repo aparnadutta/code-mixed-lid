@@ -1,4 +1,5 @@
-from typing import Optional
+# Code is based on https://github.com/AU-DIS/LSTM_langid
+from typing import Optional, Callable
 
 import torch
 from torchtext.data import sentencepiece_numericalizer, load_sp_model
@@ -7,7 +8,7 @@ from run_language_identifier import run_training
 from lstm_model import LSTMLIDModel
 
 
-def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: dict, lang_to_idx: dict,
+def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: Callable, lang_to_idx: dict,
                     hidden_dim, embedding_dim, num_lstm_layers):
     if pretrained_model_path is not None:
         model_dict = torch.load(pretrained_model_path)
@@ -25,8 +26,6 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
 
     training_params = optimizer, weight_decay, lr, batch_size, epochs
     numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
-    print("numericalizer type:", type(numericalizer))
-    print("numericalizer:", numericalizer)
 
     subword_to_idx = numericalizer
     lang_to_idx = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3, 'hi': 4, 'ne': 5, 'en': 6, 'acro': 7,
@@ -61,3 +60,12 @@ if __name__ == "__main__":
          batch_size=BATCH_SIZE,
          lr=LR,
          optimizer=OPTIMIZER)
+    print(f'PRETRAINED_MODEL = {PRETRAINED_MODEL}\n'
+          f'EPOCHS = {EPOCHS}\n'
+          f'HIDDEN_DIM = {HIDDEN_DIM}\n'
+          f'EMBEDDING_DIM = {EMBEDDING_DIM}\n'
+          f'NUM_LSTM_LAYERS = {NUM_LSTM_LAYERS}\n'
+          f'OPTIMIZER = {OPTIMIZER}\n'
+          f'LR = {LR}\n'
+          f'WEIGHT_DECAY = {WEIGHT_DECAY}\n'
+          f'BATCH_SIZE = {BATCH_SIZE}')

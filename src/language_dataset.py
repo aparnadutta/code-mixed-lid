@@ -1,13 +1,17 @@
 #!/usr/bin/env python
+import itertools
 import random
 import os
 from collections import Counter
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Callable
 
+import torch
 from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional \
     import generate_sp_model, load_sp_model, sentencepiece_tokenizer, sentencepiece_numericalizer
 from random import shuffle
+
+VOCAB_SIZE = 1000
 
 
 class Post:
@@ -24,12 +28,13 @@ class Post:
         return len(self.words)
 
 
+# TODO should "unigram" be specified? And increase vocab_size, and use other data
 def gen_sentpiece_model(training_data: List[Post]):
     sp_filepath = './sp_source_data.txt'
     with open(sp_filepath, 'a') as f:
         for post in training_data:
             f.write(' '.join(post.words) + '\n')
-    generate_sp_model(sp_filepath, vocab_size=1000, model_prefix='./spm_user')
+    generate_sp_model(sp_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user')
     sp_model = load_sp_model('./spm_user.model')
     return sp_model
 
@@ -40,16 +45,17 @@ def create_datasplits(data_filepath: str) -> Tuple[List[Post], List[Post], List[
     train, dev, test = [], [], []
     for f in files:
         ten_perc = int(len(f) * 0.1)
-        train_end = ten_perc*8
+        train_end = ten_perc * 8
         dev_end = train_end + ten_perc
 
         train.extend(f[: train_end])
         test.extend(f[train_end: dev_end])
         dev.extend(f[dev_end:])
 
-    random.shuffle(train)
-    random.shuffle(dev)
-    random.shuffle(test)
+    # TODO uncomment this to shuffle
+    # random.shuffle(train)
+    # random.shuffle(dev)
+    # random.shuffle(test)
 
     return train, dev, test
 
@@ -76,18 +82,20 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
 class LIDDataset(Dataset):
     def __init__(self, dataset):
         self.data: List[Post] = dataset
-        self.subword_data: List[Post] = []
-        self.sp_tokenizer = sentencepiece_tokenizer(load_sp_model('./spm_user.model'))
-        self.subword_to_idx: Dict[str, int] = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
+        # self.subword_data: List[Post] = []
+        self.sp_model = load_sp_model('./spm_user.model')
+        # self.sp_tokenizer = sentencepiece_tokenizer(self.sp_model)
+
+        self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
         self.lang_to_idx: Dict[str, int] = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3,
                                             'hi': 4, 'ne': 5, 'en': 6, 'acro': 7, 'ne+bn_suffix': 8}
         self.weight_dict = self.make_weight_dict()
 
-        sub_data = []
-        for post in self.data:
-            new_words = list(self.sp_tokenizer(post.words))
-            sub_data.append(Post(new_words, post.langs))
-        self.subword_data = sub_data
+        # sub_data = []
+        # for post in self.data:
+        #     new_words = list(self.sp_tokenizer(post.words))
+        #     sub_data.append(Post(new_words, post.langs))
+        # self.subword_data = sub_data
 
     def make_weight_dict(self) -> dict:
         """
@@ -103,14 +111,15 @@ class LIDDataset(Dataset):
             for label in self.lang_to_idx.keys():
                 frequency_dict[label] = label_counts[label]
             most_frequent = max(frequency_dict.values())
-            weight_dict = {label: (most_frequent / frequency_dict[label]) for label in frequency_dict.keys()}
+            weight_dict = {label: (most_frequent / frequency_dict[label]) if frequency_dict[label] != 0 else 0
+                           for label in frequency_dict.keys()}
         return weight_dict
 
     def __getitem__(self, idx) -> Post:
-        return self.subword_data[idx]
+        return self.data[idx]
 
     def __len__(self):
-        return len(self.subword_data)
+        return len(self.data)
 
     def get_tag_set(self) -> list:
         """returns ordered list of language labels in the dataset
@@ -132,6 +141,77 @@ class LIDDataset(Dataset):
         return lang_to_idx
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+
+class PyTorchLIDDataSet(Dataset):
+    """
+    PyTorch-specific wrapper that converts items to PyTorch tensors.
+    """
+
+    def __init__(self, decoree: LIDDataset):
+        self.data = []
+        if decoree is not None:
+            self.decoree = decoree
+        self.subword_to_idx = decoree.subword_to_idx
+        self.lang_to_idx = decoree.lang_to_idx
+        self.tensorify_all()
+
+    def __getitem__(self, idx):
+        if not isinstance(idx, list):
+            return self.data[idx]
+        txt = []
+        label = []
+        for i in idx:
+            item = self.data[i]
+            txt.append(item[0])
+            label.append(item[1])
+        return torch.stack(txt), torch.stack(label)
+
+    def make_weight_dict(self) -> dict:
+        return self.decoree.make_weight_dict()
+
+    def __len__(self):
+        return len(self.data)
+
+    def get_tag_set(self) -> list:
+        return self.decoree.get_tag_set()
+
+    def get_lang_to_idx(self) -> dict:
+        """get dict from lang to id, ordered alphabetically
+        Returns:
+            dict -- For converting language code to an id
+        """
+        return self.decoree.get_lang_to_idx()
+
+    def tensorify(self, data_point: Post):
+        word_ids = list(self.subword_to_idx(data_point.words))
+        lang_ids = [self.lang_to_idx[lang] for lang in data_point.langs]
+
+        # The first subword is assigned the true label, all other subwords are assigned the dummy label -1
+        lang_id_pad = [[lang_ids[word_num]] + [-1]*(len(word_ids[word_num])-1) for word_num in range(len(word_ids))]
+
+        word_ids_flat = [w_id for word in word_ids for w_id in word]
+        lang_ids_flat = [l_id for lang in lang_id_pad for l_id in lang]
+
+        return torch.tensor(word_ids_flat, dtype=torch.long), torch.tensor(lang_ids_flat, dtype=torch.long)
+
+    def tensorify_all(self):
+        new_data = []
+        for elem in self.decoree:
+            new_data.append(self.tensorify(elem))
+        self.data = new_data
+
+    def set_lang_to_idx(self, l_to_idx):
+        self.lang_to_idx = l_to_idx
+        self.decoree.lang_to_idx = l_to_idx
+
+    def set_subword_to_idx(self, s_to_idx):
+        self.subword_to_idx = s_to_idx
+        self.decoree.char_to_idx = s_to_idx
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Based on https://github.com/chrisvdweth/ml-toolkit/blob/master/pytorch/utils/data/text/dataset.py
 class BatchSampler(Sampler):
     """
     This class creates batches containing equal length examples.

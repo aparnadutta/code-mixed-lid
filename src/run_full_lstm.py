@@ -51,15 +51,9 @@ NUM_LSTM_LAYERS = 2
 OPTIMIZER = 'SGD'
 LR = 0.1
 WEIGHT_DECAY = 0.00001
-BATCH_SIZE = 64
+BATCH_SIZE = 1
 
 if __name__ == "__main__":
-    main(pretrained_model=PRETRAINED_MODEL,
-         epochs=EPOCHS,
-         weight_decay=WEIGHT_DECAY,
-         batch_size=BATCH_SIZE,
-         lr=LR,
-         optimizer=OPTIMIZER)
     print(f'PRETRAINED_MODEL = {PRETRAINED_MODEL}\n'
           f'EPOCHS = {EPOCHS}\n'
           f'HIDDEN_DIM = {HIDDEN_DIM}\n'
@@ -69,3 +63,9 @@ if __name__ == "__main__":
           f'LR = {LR}\n'
           f'WEIGHT_DECAY = {WEIGHT_DECAY}\n'
           f'BATCH_SIZE = {BATCH_SIZE}')
+    main(pretrained_model=PRETRAINED_MODEL,
+         epochs=EPOCHS,
+         weight_decay=WEIGHT_DECAY,
+         batch_size=BATCH_SIZE,
+         lr=LR,
+         optimizer=OPTIMIZER)

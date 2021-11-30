@@ -14,7 +14,7 @@ class LSTMLIDModel(LIDModel):
         self.num_layers = layers
         self.embedding_dim = embedding_dim
 
-        self.embedding = nn.Embedding(self.vocab_size, embedding_dim)
+        self.embedding = nn.Embedding(self.vocab_size, embedding_dim, padding_idx=0)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, num_layers=layers, bidirectional=True, batch_first=True)
         self.linear = nn.Linear(hidden_dim * 2, self.lang_set_size)
         self.hidden = self.init_hidden()

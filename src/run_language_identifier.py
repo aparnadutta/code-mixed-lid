@@ -51,15 +51,18 @@ def run_training(model, training_params, to_train=True):
     train, dev, test = create_datasplits(data_filepath)
 
     train_dataset = LIDDataset(train)
+    dev_dataset = LIDDataset(dev)
     test_dataset = LIDDataset(test)
 
     train_data_converted = PyTorchLIDDataSet(train_dataset)
+    dev_converted = PyTorchLIDDataSet(dev_dataset)
     test_data_converted = PyTorchLIDDataSet(test_dataset)
+
     weight_dict = train_dataset.weight_dict
 
     if to_train:
         print("Training model")
-        train_model(train_data_converted, test_data_converted, model,
+        train_model(train_data_converted, dev_converted, model,
                     training_params=training_params, weight_dict=weight_dict)
 
     print("Testing model")

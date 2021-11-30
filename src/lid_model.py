@@ -10,8 +10,8 @@ from language_dataset import BatchSampler, VOCAB_SIZE
 
 
 def correct_predictions(scores, labels):
-    pred = torch.argmax(scores, dim=1)
-    return (pred == labels).float().sum()
+    pred = argmax(scores)
+    return (torch.cat(pred, 0) == labels).sum()
 
 
 def argmax(vec):
@@ -45,29 +45,33 @@ class LIDModel(nn.Module):
     def forward(self, sentences):
         raise NotImplemented
 
-    def predict(self, sentence):
-        self.eval()
-        prep_sent = self.prepare_sequence(sentence)
-        feats = F.log_softmax(self(prep_sent), dim=-1)
-        lang_preds = [self.idx_to_lang[argmax(word[0])] for word in feats]
-        self.train()
-        return lang_preds
-
-    def rank(self, sentence):
-        self.eval()
-        prep_sentence = self.prepare_sequence(sentence)
-        logit = self(prep_sentence)
-        smax = F.log_softmax(logit, dim=-1)
-        arr = []
-        for lang, index in self.lang_to_idx.items():
-            # TODO i think this might cause a problem, had to index into predict above
-            arr.append((lang, smax[0][index].item()))
-        self.train()
-        return arr
+    # predict and rank are for when the LanguageIdentifier class is used later on
+    # def predict(self, sentence):
+    #     self.eval()
+    #     prep_sent = self.prepare_sequence(sentence)
+    #     print("sentence:", sentence)
+    #     print("prep_sent:", prep_sent)
+    #     feats = F.log_softmax(self(prep_sent), dim=-1)
+    #     lang_preds = [self.idx_to_lang[argmax(word[0])] for word in feats]
+    #     self.train()
+    #     return lang_preds
+    #
+    # def rank(self, sentence):
+    #     self.eval()
+    #     prep_sentence = self.prepare_sequence(sentence)
+    #     logit = self(prep_sentence)
+    #     smax = F.log_softmax(logit, dim=-1)
+    #     arr = []
+    #     for lang, index in self.lang_to_idx.items():
+    #         # TODO i think this might cause a problem, had to index into predict above
+    #         arr.append((lang, smax[0][index].item()))
+    #     self.train()
+    #     return arr
 
     def fit(self, train_dataset, dev_dataset, optimizer, epochs=3, batch_size=64, weight_dict=None):
         test_sampler = BatchSampler(batch_size, dev_dataset)
         dataloader_dev = DataLoader(dev_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=test_sampler)
+
         weights = None
         if weight_dict is not None:
             weights = torch.zeros(len(weight_dict)).to(self.device)
@@ -85,11 +89,13 @@ class LIDModel(nn.Module):
 
             sampler = BatchSampler(batch_size, train_dataset)
             dataloader_train = DataLoader(train_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=sampler)
+
             # Logit is the pre-softmax scores
             for idx, batch in enumerate(tqdm(dataloader_train, leave=False)):
                 optimizer.zero_grad()
                 tensor_sentences, labels = batch
                 logit = self(tensor_sentences)
+                # print("logit:", logit)
 
                 # Todo need to modify the label set so that it's the same length as BPE sentence
                 loss_nll = loss_train(logit, labels)
@@ -99,6 +105,7 @@ class LIDModel(nn.Module):
                 loss.backward()
                 optimizer.step()
             avg_total_loss /= sampler.batch_count()
+
             accuracy = num_correct_preds / len(train_dataset)
             print(f"Average training error in epoch {epoch + 1}: {avg_total_loss:.5f} "
                       f"and training accuracy: {accuracy:.4f}")
@@ -115,6 +122,7 @@ class LIDModel(nn.Module):
                 num_correct_preds += correct_predictions(logit, labels)
                 avg_total_loss += loss_nll.item()
             avg_total_loss /= test_sampler.batch_count()
+
             accuracy = num_correct_preds / len(dev_dataset)
             print(f"Average total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)

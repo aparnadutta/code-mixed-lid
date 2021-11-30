@@ -24,7 +24,6 @@ def argmax(vec):
 class LIDModel(nn.Module):
     def __init__(self, subword_to_idx, lang_to_idx):
         # Subword_to_idx should be a map that converts a subword to a number
-        # Subword_to_idx should contain an unknown symbol ("<unk>", 0)
         # Lang_to_idx should be a map that converts a language to a number
         self.subword_to_idx = subword_to_idx
         self.lang_to_idx = lang_to_idx
@@ -40,13 +39,8 @@ class LIDModel(nn.Module):
         labels = labels.to(self.device)
         return words, labels
 
-    def safe_sub_to_idx(self, subword):
-        if subword not in self.subword_to_idx:
-            subword = '<unk>'
-        return self.subword_to_idx[subword]
-
     def prepare_sequence(self, sentence):
-        idxs = [self.safe_sub_to_idx(sub) for sub in sentence]
+        idxs = [self.subword_to_idx(sub) for sub in sentence]
         return torch.tensor(idxs, dtype=torch.long, device=self.device).view(1, len(sentence))
 
     def forward(self, sentences):

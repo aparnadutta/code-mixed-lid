@@ -24,8 +24,11 @@ def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: dict, 
 def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
 
     training_params = optimizer, weight_decay, lr, batch_size, epochs
+    numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
+    print("numericalizer type:", type(numericalizer))
+    print("numericalizer:", numericalizer)
 
-    subword_to_idx = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
+    subword_to_idx = numericalizer
     lang_to_idx = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3, 'hi': 4, 'ne': 5, 'en': 6, 'acro': 7,
                    'ne+bn_suffix': 8}
 

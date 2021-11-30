@@ -1,5 +1,5 @@
 from language_dataset import LIDDataset, Post, create_datasplits, gen_sentpiece_model, load_sp_model
-from indictrans import Transliterator
+# from indictrans import Transliterator
 from torchtext.data.functional import load_sp_model, sentencepiece_tokenizer, sentencepiece_numericalizer
 
 # trn = Transliterator(source='eng', target='ben', build_lookup=True)

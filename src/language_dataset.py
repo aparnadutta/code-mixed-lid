@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import itertools
 import random
 import os
 from collections import Counter
@@ -7,8 +6,7 @@ from typing import Optional, List, Dict, Tuple, Callable
 
 import torch
 from torch.utils.data import Sampler, Dataset
-from torchtext.data.functional \
-    import generate_sp_model, load_sp_model, sentencepiece_tokenizer, sentencepiece_numericalizer
+from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
 VOCAB_SIZE = 1000
@@ -82,20 +80,11 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
 class LIDDataset(Dataset):
     def __init__(self, dataset):
         self.data: List[Post] = dataset
-        # self.subword_data: List[Post] = []
         self.sp_model = load_sp_model('./spm_user.model')
-        # self.sp_tokenizer = sentencepiece_tokenizer(self.sp_model)
-
         self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
         self.lang_to_idx: Dict[str, int] = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3,
                                             'hi': 4, 'ne': 5, 'en': 6, 'acro': 7, 'ne+bn_suffix': 8}
         self.weight_dict = self.make_weight_dict()
-
-        # sub_data = []
-        # for post in self.data:
-        #     new_words = list(self.sp_tokenizer(post.words))
-        #     sub_data.append(Post(new_words, post.langs))
-        # self.subword_data = sub_data
 
     def make_weight_dict(self) -> dict:
         """
@@ -184,13 +173,13 @@ class PyTorchLIDDataSet(Dataset):
         return self.decoree.get_lang_to_idx()
 
     def tensorify(self, data_point: Post):
-        word_ids = list(self.subword_to_idx(data_point.words))
-        lang_ids = [self.lang_to_idx[lang] for lang in data_point.langs]
+        word_id = list(self.subword_to_idx(data_point.words))
+        lang_id = [self.lang_to_idx[lang] for lang in data_point.langs]
 
         # The first subword is assigned the true label, all other subwords are assigned the dummy label -1
-        lang_id_pad = [[lang_ids[word_num]] + [-1]*(len(word_ids[word_num])-1) for word_num in range(len(word_ids))]
+        lang_id_pad = [[lang_id[word_num]] + [-1] * (len(word_id[word_num]) - 1) for word_num in range(len(word_id))]
 
-        word_ids_flat = [w_id for word in word_ids for w_id in word]
+        word_ids_flat = [w_id for word in word_id for w_id in word]
         lang_ids_flat = [l_id for lang in lang_id_pad for l_id in lang]
 
         return torch.tensor(word_ids_flat, dtype=torch.long), torch.tensor(lang_ids_flat, dtype=torch.long)

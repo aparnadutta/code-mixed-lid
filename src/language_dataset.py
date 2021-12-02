@@ -176,9 +176,10 @@ class PyTorchLIDDataSet(Dataset):
         word_id = list(self.subword_to_idx(data_point.words))
         lang_id = [self.lang_to_idx[lang] for lang in data_point.langs]
 
-        # The first subword is assigned the true label, all other subwords are assigned the dummy label -1
-        lang_id_pad = [[lang_id[word_num]] + [-1] * (len(word_id[word_num]) - 1) for word_num in range(len(word_id))]
+        # The first subword is assigned the true label, all other subwords are assigned the dummy label 10
+        lang_id_pad = [[lang_id[word_num]] + [10] * (len(word_id[word_num]) - 1) for word_num in range(len(word_id))]
 
+        # TODO before flattening, need to keep track of the indices of start subwords
         word_ids_flat = [w_id for word in word_id for w_id in word]
         lang_ids_flat = [l_id for lang in lang_id_pad for l_id in lang]
 

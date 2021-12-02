@@ -23,7 +23,7 @@ def argmax(vec):
 class LIDModel(nn.Module):
     def __init__(self, subword_to_idx, lang_to_idx):
         # Subword_to_idx is a function that converts a subword to a number, and converts unknown tokens to 0
-        # Lang_to_idx should be a map that converts a language to a number
+        # Lang_to_idx is a map that converts a language to a number
         self.subword_to_idx = subword_to_idx
         self.lang_to_idx = lang_to_idx
         self.idx_to_lang = dict([(value, key) for key, value in lang_to_idx.items()])
@@ -42,31 +42,33 @@ class LIDModel(nn.Module):
         idxs = [self.subword_to_idx(sub) for sub in sentence]
         return torch.tensor(idxs, dtype=torch.long, device=self.device).view(1, len(sentence))
 
-    def forward(self, sentences):
-        raise NotImplemented
+    def forward(self, sentence):
+        feats = F.log_softmax(self(sentence), dim=-1)
+        lang_preds = [argmax(word[0]) for word in feats]
+        return lang_preds
+        # TODO
+        #   raise NotImplemented
 
     # predict and rank are for when the LanguageIdentifier class is used later on
-    # def predict(self, sentence):
-    #     self.eval()
-    #     prep_sent = self.prepare_sequence(sentence)
-    #     print("sentence:", sentence)
-    #     print("prep_sent:", prep_sent)
-    #     feats = F.log_softmax(self(prep_sent), dim=-1)
-    #     lang_preds = [self.idx_to_lang[argmax(word[0])] for word in feats]
-    #     self.train()
-    #     return lang_preds
-    #
-    # def rank(self, sentence):
-    #     self.eval()
-    #     prep_sentence = self.prepare_sequence(sentence)
-    #     logit = self(prep_sentence)
-    #     smax = F.log_softmax(logit, dim=-1)
-    #     arr = []
-    #     for lang, index in self.lang_to_idx.items():
-    #         # TODO i think this might cause a problem, had to index into predict above
-    #         arr.append((lang, smax[0][index].item()))
-    #     self.train()
-    #     return arr
+    def predict(self, sentence):
+        self.eval()
+        prep_sent = self.prepare_sequence(sentence)
+        feats = F.log_softmax(self(prep_sent), dim=-1)
+        lang_preds = [self.idx_to_lang[argmax(word[0])] for word in feats]
+        self.train()
+        return lang_preds
+
+    def rank(self, sentence):
+        self.eval()
+        prep_sentence = self.prepare_sequence(sentence)
+        logit = self(prep_sentence)
+        smax = F.log_softmax(logit, dim=-1)
+        arr = []
+        for lang, index in self.lang_to_idx.items():
+            # TODO i think this might cause a problem, had to index into predict above
+            arr.append((lang, smax[0][index].item()))
+        self.train()
+        return arr
 
     def fit(self, train_dataset, dev_dataset, optimizer, epochs=3, batch_size=64, weight_dict=None):
         test_sampler = BatchSampler(batch_size, dev_dataset)
@@ -78,6 +80,7 @@ class LIDModel(nn.Module):
             for lang in weight_dict:
                 indx = self.lang_to_idx[lang]
                 weights[indx] = weight_dict[lang]
+
         loss_train = nn.CrossEntropyLoss(weight=weights)
         loss_dev = nn.CrossEntropyLoss()
 

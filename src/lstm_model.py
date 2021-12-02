@@ -8,7 +8,7 @@ DROPOUT = 0.4
 
 
 class LSTMLIDModel(LIDModel):
-    def __init__(self, subword_to_idx, lang_to_idx, embedding_dim=300, hidden_dim=300, layers=2):
+    def __init__(self, subword_to_idx, lang_to_idx, embedding_dim=300, hidden_dim=300, layers=1):
         super(LSTMLIDModel, self).__init__(subword_to_idx, lang_to_idx)
         self.hidden_dim = hidden_dim
         self.num_layers = layers
@@ -17,17 +17,20 @@ class LSTMLIDModel(LIDModel):
         self.embedding = nn.Embedding(self.vocab_size, embedding_dim, padding_idx=0)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, num_layers=layers, bidirectional=True, batch_first=True)
         self.linear = nn.Linear(hidden_dim * 2, self.lang_set_size)
-        self.hidden = self.init_hidden()
+        # self.hidden = self.init_hidden()
         self.dropout = nn.Dropout(DROPOUT)
         self.to(self.device)
 
-    def init_hidden(self):
-        return torch.randn(2*self.num_layers, 1, self.hidden_dim), torch.randn(2*self.num_layers, 1, self.hidden_dim)
+    # TODO The shape is: (num layers * num directions, batch size, hidden dim); how do i fix batch size?
+    # can just not initialize it and start from zero, just get rid of this,
+    # def init_hidden(self):
+    #     return torch.randn(2*self.num_layers, 1, self.hidden_dim), torch.randn(2*self.num_layers, 1, self.hidden_dim)
 
     def forward(self, sentence):
         embed = self.embedding(sentence)
         embed = self.dropout(embed)
-        outputs, _ = self.lstm(embed, self.hidden)
+        # outputs, _ = self.lstm(embed, self.hidden)
+        outputs, _ = self.lstm(embed)
         outputs = self.linear(outputs)
         return outputs.squeeze()
 

@@ -72,8 +72,9 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
                         words, langs = [], []
                 else:
                     word, lang = line.split('\t')[:-1]
-                    words.append(word)
-                    langs.append(lang)
+                    if "http" not in word:
+                        words.append(word)
+                        langs.append(lang)
     return all_data
 
 
@@ -177,7 +178,7 @@ class PyTorchLIDDataSet(Dataset):
         lang_id = [self.lang_to_idx[lang] for lang in data_point.langs]
 
         # The first subword is assigned the true label, all other subwords are assigned the dummy label 10
-        lang_id_pad = [[lang_id[word_num]] + [10] * (len(word_id[word_num]) - 1) for word_num in range(len(word_id))]
+        lang_id_pad = [[lang_id[word_num]] + [-1] * (len(word_id[word_num]) - 1) for word_num in range(len(word_id))]
 
         # TODO before flattening, need to keep track of the indices of start subwords
         word_ids_flat = [w_id for word in word_id for w_id in word]

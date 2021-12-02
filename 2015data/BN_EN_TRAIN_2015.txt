@@ -1,3 +1,4 @@
+
 lokjon	bn	N_NN
 ajke	bn	RB_ALC
 hebby	bn	JJ
@@ -17871,7 +17872,7 @@ With	en	PSP
 this	en	PR_PRP
 ..	univ	RD_PUNC
 
----
+
 -	univ	RD_PUNC
 Boy	en	N_NN
 Friend	en	N_NN

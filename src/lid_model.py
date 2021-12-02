@@ -43,11 +43,7 @@ class LIDModel(nn.Module):
         return torch.tensor(idxs, dtype=torch.long, device=self.device).view(1, len(sentence))
 
     def forward(self, sentence):
-        feats = F.log_softmax(self(sentence), dim=-1)
-        lang_preds = [argmax(word[0]) for word in feats]
-        return lang_preds
-        # TODO
-        #   raise NotImplemented
+        raise NotImplemented
 
     # predict and rank are for when the LanguageIdentifier class is used later on
     def predict(self, sentence):
@@ -81,8 +77,9 @@ class LIDModel(nn.Module):
                 indx = self.lang_to_idx[lang]
                 weights[indx] = weight_dict[lang]
 
-        loss_train = nn.CrossEntropyLoss(weight=weights)
-        loss_dev = nn.CrossEntropyLoss()
+        # Index of the dummy label is 10
+        loss_train = nn.CrossEntropyLoss(weight=weights, ignore_index=-1)
+        loss_dev = nn.CrossEntropyLoss(ignore_index=-1)
 
         print(f"Running for {epochs} epochs")
         for epoch in range(epochs):
@@ -98,9 +95,9 @@ class LIDModel(nn.Module):
                 optimizer.zero_grad()
                 tensor_sentences, labels = batch
                 logit = self(tensor_sentences)
-                # print("logit:", logit)
-
-                # Todo need to modify the label set so that it's the same length as BPE sentence
+                print("out shape:", logit.size())
+                print("labels shape:", labels.size())
+                print("labels:", labels)
                 loss_nll = loss_train(logit, labels)
                 num_correct_preds += correct_predictions(logit, labels)
                 loss = loss_nll

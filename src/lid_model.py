@@ -10,8 +10,8 @@ from language_dataset import BatchSampler, VOCAB_SIZE
 
 
 def correct_predictions(scores, labels):
-    pred = argmax(scores)
-    return (torch.cat(pred, 0) == labels).sum()
+    pred = torch.argmax(scores, dim=1)
+    return (pred == labels).sum()
 
 
 def argmax(vec):
@@ -95,9 +95,8 @@ class LIDModel(nn.Module):
                 optimizer.zero_grad()
                 tensor_sentences, labels = batch
                 logit = self(tensor_sentences)
-                print("out shape:", logit.size())
-                print("labels shape:", labels.size())
-                print("labels:", labels)
+                # print("out shape:", logit.size())
+                # print("labels shape:", labels.size())
                 loss_nll = loss_train(logit, labels)
                 num_correct_preds += correct_predictions(logit, labels)
                 loss = loss_nll

@@ -25,7 +25,7 @@ class LSTMLIDModel(LIDModel):
         embed = self.dropout(embed)
         outputs, _ = self.lstm(embed)
         outputs = self.linear(outputs)
-        return outputs
+        return outputs.transpose(1, 2)
 
     def save_model(self, fileending=""):
         """Saves a dict containing statedict and other required model parameters and adds it as artifact

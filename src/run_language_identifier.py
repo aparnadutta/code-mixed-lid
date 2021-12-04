@@ -52,8 +52,8 @@ def train_model(data_set, test_dataset, lidmodel: 'LIDModel', training_params, w
 
 
 def run_training(model, training_params, to_train=True):
-    data_filepath = './data'
-    train, dev, test = create_datasplits(data_filepath)
+
+    train, dev, test = create_datasplits('./prepped_data/')
 
     train_dataset = LIDDataset(train)
     dev_dataset = LIDDataset(dev)

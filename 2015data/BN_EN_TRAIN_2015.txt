@@ -911,8 +911,8 @@ hai	hi	V_VAUX
 
 i	en	PR_PRP
 guess	en	V_VM
-.	univ..	RD_PUNC
-univ	:D	E
+.	univ	RD_PUNC
+:D	univ	E
 
 
 :(	univ	E
@@ -21506,8 +21506,6 @@ all	en	DT
 of	en	PSP
 u	en	PR_PRP
 
-
-	univ	$
 ,	univ	RD_PUNC
 In	en	PSP
 Singapore	ne	N_NNP

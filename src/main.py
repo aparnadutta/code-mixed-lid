@@ -1,30 +1,52 @@
-from language_dataset import LIDDataset, Post, create_datasplits, gen_sentpiece_model, load_sp_model, load_posts
+import random
+from collections import Counter
+
+from language_dataset import load_posts, write_prep_data, create_datasplits
 from torchtext.data.functional import load_sp_model, sentencepiece_tokenizer, sentencepiece_numericalizer
+import numpy as np
 
-
-# TODO: called in run_training() in run_language_identifier
-# train, dev, test = create_datasplits('./data')
 
 data2015 = load_posts('./2015data/BN_EN_TRAIN_2015.txt')
 fb = load_posts('./data/FB_BN_EN_CR.txt')
 twit = load_posts('./data/TWT_BN_EN_CR.txt')
-whats = load_posts('./data/WA_BN_EN_CR.txt')
+whats = load_posts('./data/WA_BN_EN_CR_CORRECTED.txt')
 
 all_data = data2015 + fb + twit + whats
 cleaned = [post for post in all_data if 'bn' in set(post.langs)]
 num_tokens = sum([len(post.words) for post in cleaned])
 inst_lens = [len(post.words) for post in all_data]
+lang_counts = Counter()
+for post in all_data:
+    lang_counts.update(post.langs)
 
 print("num instances:", len(all_data))
 print("num cleaned:", len(cleaned))
 print("num tokens:", num_tokens)
+print("lang counts:", lang_counts)
+print("max num words in post:", np.max(inst_lens))
+print("average num words in post:", np.mean(inst_lens))
 
-print("max len:", max(inst_lens))
+train, dev, test = [], [], []
+random.shuffle(all_data)
+
+ten_perc = int(len(all_data) * 0.1)
+train_end = ten_perc * 8
+dev_end = train_end + ten_perc
+
+train.extend(all_data[: train_end])
+test.extend(all_data[train_end: dev_end])
+dev.extend(all_data[dev_end:])
 
 
-#TODO reduce label set size-- if bn is in, make the label bn. If hindi is in, remove the word
+write_prep_data((train, dev, test))
 
-# print("words:", [word for post in cleaned for word in post.words])
+
+train1, dev1, test1 = create_datasplits('./prepped_data/')
+print("len train1:", len(train1))
+
+
+
+
 
 # gen_sentpiece_model(train)
 sp_model = load_sp_model('./spm_user.model')

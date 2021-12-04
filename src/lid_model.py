@@ -128,8 +128,7 @@ class LIDModel(nn.Module):
                 optimizer.zero_grad()
                 tensor_sentences, masks, labels = batch
                 logit = self(tensor_sentences)
-                # print("out size:", logit.size())
-                # print("labels shape:", labels.size())
+
                 loss_nll = loss_train(logit, labels)
                 num_correct_preds += correct_predictions(logit, masks, labels)
                 loss = loss_nll

@@ -37,25 +37,32 @@ def gen_sentpiece_model(training_data: List[Post]):
     return sp_model
 
 
-def create_datasplits(data_filepath: str) -> Tuple[List[Post], List[Post], List[Post]]:
-    files = [load_posts(f'{data_filepath}/{file}') for file in os.listdir(data_filepath)]
+def write_prep_data(data: tuple[list[Post], list[Post], list[Post]]):
+    fnames = ['./prepped_data/train.txt', './prepped_data/dev.txt', './prepped_data/test.txt']
+    for fname, data_chunk in zip(fnames, data):
+        with open(fname, 'w') as file:
+            for post in data_chunk:
+                tagged = ['/'.join((word, tag)) for word, tag in zip(post.words, post.langs)]
+                file.write(" ".join(tagged) + '\n')
 
-    train, dev, test = [], [], []
-    for f in files:
-        ten_perc = int(len(f) * 0.1)
-        train_end = ten_perc * 8
-        dev_end = train_end + ten_perc
 
-        train.extend(f[: train_end])
-        test.extend(f[train_end: dev_end])
-        dev.extend(f[dev_end:])
-
-    # TODO uncomment this to shuffle
-    # random.shuffle(train)
-    # random.shuffle(dev)
-    # random.shuffle(test)
-
+def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[Post]]:
+    train = load_file(data_filepath + 'train.txt')
+    dev = load_file(data_filepath + 'dev.txt')
+    test = load_file(data_filepath + 'test.txt')
     return train, dev, test
+
+
+def load_file(filepath: str) -> list[Post]:
+    data = []
+    with open(filepath) as f:
+        for line in f:
+            line = line.rstrip().split(' ')
+            if len(line) > 0:
+                words = [pair.rsplit('/')[0] for pair in line]
+                langs = [pair.rsplit('/')[1] for pair in line]
+                data.append(Post(words, langs))
+    return data
 
 
 def load_posts(filepath: Optional[str]) -> List[Post]:
@@ -71,8 +78,9 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
                         all_data.append(Post(words, langs))
                         words, langs = [], []
                 else:
-                    word, lang = line.split('\t')[:-1]
-                    if "http" not in word and "@" not in word:
+                    word, lang, _ = line.split('\t')
+                    lang = lang.split('+')[0]
+                    if "http" not in word and "@" not in word and lang != 'undef':
                         words.append(word)
                         langs.append(lang)
     return all_data

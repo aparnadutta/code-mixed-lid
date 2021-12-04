@@ -26,15 +26,14 @@ class LSTMLIDModel(LIDModel):
         outputs, _ = self.lstm(embed)
         outputs = self.linear(outputs)
         return outputs.transpose(1, 2)
+        # return outputs
 
     def save_model(self, fileending=""):
         """Saves a dict containing statedict and other required model parameters and adds it as artifact
         Arguments:
         """
         tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".pth")
-        required_model_information = {'subword_to_idx': self.subword_to_idx,
-                                      'lang_to_idx': self.lang_to_idx,
-                                      'model_state_dict': self.state_dict(),
+        required_model_information = {'model_state_dict': self.state_dict(),
                                       'embedding_dim': self.embedding_dim,
                                       'hidden_dim': self.hidden_dim,
                                       'layers': self.num_layers}

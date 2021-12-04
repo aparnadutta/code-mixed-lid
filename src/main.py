@@ -13,10 +13,17 @@ whats = load_posts('./data/WA_BN_EN_CR.txt')
 all_data = data2015 + fb + twit + whats
 cleaned = [post for post in all_data if 'bn' in set(post.langs)]
 num_tokens = sum([len(post.words) for post in cleaned])
+inst_lens = [len(post.words) for post in all_data]
 
 print("num instances:", len(all_data))
 print("num cleaned:", len(cleaned))
 print("num tokens:", num_tokens)
+
+print("max len:", max(inst_lens))
+
+
+#TODO reduce label set size-- if bn is in, make the label bn. If hindi is in, remove the word
+
 # print("words:", [word for post in cleaned for word in post.words])
 
 # gen_sentpiece_model(train)

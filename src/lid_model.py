@@ -9,9 +9,16 @@ from tqdm import tqdm
 from language_dataset import BatchSampler, VOCAB_SIZE
 
 
-def correct_predictions(scores, labels):
+def correct_predictions(scores, masks, labels):
     pred = torch.argmax(scores, dim=1)
-    return (pred == labels).sum()
+
+    masked_pred = torch.masked_select(pred, masks)
+    masked_labels = torch.masked_select(labels, masks)
+
+    num_corr = masked_pred == masked_labels
+    num_corr = num_corr.sum()
+
+    return num_corr
 
 
 def argmax(vec):
@@ -33,36 +40,62 @@ class LIDModel(nn.Module):
         super(LIDModel, self).__init__()
 
     def pad_collate(self, batch):
-        (words, labels) = batch[0]
+        (words, masks, labels) = batch[0]
         words = words.to(self.device)
+        masks = masks.to(self.device)
         labels = labels.to(self.device)
-        return words, labels
+        return words, masks, labels
 
     def prepare_sequence(self, sentence):
-        idxs = [self.subword_to_idx(sub) for sub in sentence]
-        return torch.tensor(idxs, dtype=torch.long, device=self.device).view(1, len(sentence))
+        word_id = list(self.subword_to_idx(sentence))
+        mask_nest = [[True] + [False] * (len(word_id[num]) - 1) for num in range(len(word_id))]
+
+        word_ids_flat = [w_id for word in word_id for w_id in word]
+        mask_flat = [idx for word in mask_nest for idx in word]
+
+        id_tensor = torch.tensor(word_ids_flat, dtype=torch.long, device=self.device).view(1, len(word_ids_flat))
+        mask_tensor = torch.tensor(mask_flat, dtype=torch.bool, device=self.device)
+
+        return id_tensor, mask_tensor
 
     def forward(self, sentence):
         raise NotImplemented
 
-    # predict and rank are for when the LanguageIdentifier class is used later on
     def predict(self, sentence):
         self.eval()
-        prep_sent = self.prepare_sequence(sentence)
-        feats = F.log_softmax(self(prep_sent), dim=-1)
-        lang_preds = [self.idx_to_lang[argmax(word[0])] for word in feats]
+        prep_sent, mask = self.prepare_sequence(sentence)
+
+        feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
+        feats_smax = F.log_softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
+
+        preds = torch.argmax(feats_smax, dim=-1)
+        masked_preds = torch.masked_select(preds, mask)
+
+        lang_preds = [self.idx_to_lang[pred.item()] for pred in masked_preds]
+
         self.train()
         return lang_preds
 
     def rank(self, sentence):
         self.eval()
-        prep_sentence = self.prepare_sequence(sentence)
-        logit = self(prep_sentence)
-        smax = F.log_softmax(logit, dim=-1)
+        prep_sent, mask = self.prepare_sequence(sentence)
+
+        feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
+        feats_smax = F.log_softmax(feats, dim=-1)  # log-softmaxing over each word
+
+        num_labels = feats_smax.size()[-1]
+
+        masked_feats = torch.masked_select(feats_smax.transpose(1, 2), mask)
+        new_seq_len = masked_feats.size()[0] // num_labels
+        masked_feats = masked_feats.reshape(new_seq_len, num_labels)
+
         arr = []
-        for lang, index in self.lang_to_idx.items():
-            # TODO i think this might cause a problem, had to index into predict above
-            arr.append((lang, smax[0][index].item()))
+
+        for word_i in range(new_seq_len):
+            word_rank = []
+            for lang, lang_idx in self.lang_to_idx.items():
+                word_rank.append((lang, masked_feats[word_i][lang_idx].item()))
+            arr.append(word_rank)
         self.train()
         return arr
 
@@ -93,12 +126,12 @@ class LIDModel(nn.Module):
             # Logit is the pre-softmax scores
             for idx, batch in enumerate(tqdm(dataloader_train, leave=False)):
                 optimizer.zero_grad()
-                tensor_sentences, labels = batch
+                tensor_sentences, masks, labels = batch
                 logit = self(tensor_sentences)
-                # print("out shape:", logit.size())
+                # print("out size:", logit.size())
                 # print("labels shape:", labels.size())
                 loss_nll = loss_train(logit, labels)
-                num_correct_preds += correct_predictions(logit, labels)
+                num_correct_preds += correct_predictions(logit, masks, labels)
                 loss = loss_nll
                 avg_total_loss += loss.item()
                 loss.backward()
@@ -115,10 +148,10 @@ class LIDModel(nn.Module):
             # Test model
             avg_total_loss, num_correct_preds = 0, 0
             for _, batch in enumerate(tqdm(dataloader_dev, leave=False)):
-                tensor_sentences, labels = batch
+                tensor_sentences, masks, labels = batch
                 logit = self(tensor_sentences)
                 loss_nll = loss_dev(logit, labels)
-                num_correct_preds += correct_predictions(logit, labels)
+                num_correct_preds += correct_predictions(logit, masks, labels)
                 avg_total_loss += loss_nll.item()
             avg_total_loss /= test_sampler.batch_count()
 
@@ -130,16 +163,11 @@ class LIDModel(nn.Module):
             print("Time spent in epoch {0}: {1:.2f} ".format(epoch + 1, time.time() - epoch_start_time))
 
     def save_model(self, fileending=""):
-        """Saves a pytorch model fully and adds it as artifact
-        Arguments:
-            pred_prob  -- list or numpy array to save as .npy file
+        """Saves a pytorch model fully
         """
         tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".pth")
-        required_model_information = {'subword_to_idx': self.subword_to_idx, 'lang_to_idx': self.lang_to_idx,
-                                      'model_state_dict': self.state_dict()}
-
+        required_model_information = {'model_state_dict': self.state_dict()}
         torch.save(required_model_information, tmpf.name)
-        fname = "trained_model_dict" + fileending + ".pth"
-        # exp.add_artifact(tmpf.name, fname)
+        fname = "../trained_model_dict" + fileending + ".pth"
         tmpf.close()
         os.unlink(tmpf.name)

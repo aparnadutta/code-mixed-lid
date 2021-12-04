@@ -11,17 +11,22 @@ from language_dataset import LIDDataset, PyTorchLIDDataSet, create_datasplits
 from typing import Optional
 
 
-def test_model(data_set, model):
+def test_model(data_set, model: LIDModel):
     model.eval()
     lang_to_idx = model.lang_to_idx
     data_loader = DataLoader(data_set, batch_size=1)
-    pred_prob = np.zeros((len(data_set), len(lang_to_idx)+1))
+    # 117 is the max number of words in a post
+    pred_prob = np.zeros((len(data_set), 117, len(lang_to_idx)+1))
 
     for i, item in enumerate(tqdm(data_loader, leave=False)):
-        probs = model.rank(item['text'][0])
-        for lang, prob in probs:
-            pred_prob[i, lang_to_idx[lang]] = prob
-        pred_prob[i, len(lang_to_idx)] = lang_to_idx[item['label'][0]]
+        words, langs = item
+        words = [w[0] for w in words]
+        probs = model.rank(words)
+
+        for word_idx in range(len(probs)):
+            for lang, prob in probs[word_idx]:
+                pred_prob[i, word_idx, lang_to_idx[lang]] = prob
+            pred_prob[i, word_idx, len(lang_to_idx)] = lang_to_idx[langs[word_idx][0]]
     return pred_prob
 
 
@@ -32,7 +37,7 @@ def save_probs(pred_prob, file_ending=""):
     """
     tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".npy")
     np.save(tmpf.name, pred_prob)
-    fname = "prediction_probabilities" + file_ending + ".npy"
+    fname = "./prediction_probabilities" + file_ending + ".npy"
     tmpf.close()
     os.unlink(tmpf.name)
 
@@ -69,5 +74,5 @@ def run_training(model, training_params, to_train=True):
     eval_data = test_model(data_set=test_dataset, model=model)
     print("Saving model")
     model.save_model()
-    print("Saving predictions and lang_to_idx")
+    print("Saving predictions")
     save_probs(eval_data)

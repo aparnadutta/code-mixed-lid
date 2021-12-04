@@ -72,7 +72,7 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
                         words, langs = [], []
                 else:
                     word, lang = line.split('\t')[:-1]
-                    if "http" not in word:
+                    if "http" not in word and "@" not in word:
                         words.append(word)
                         langs.append(lang)
     return all_data
@@ -105,8 +105,9 @@ class LIDDataset(Dataset):
                            for label in frequency_dict.keys()}
         return weight_dict
 
-    def __getitem__(self, idx) -> Post:
-        return self.data[idx]
+    def __getitem__(self, idx) -> tuple[list[str], list[str]]:
+        idx_item = self.data[idx]
+        return idx_item.words, idx_item.langs
 
     def __len__(self):
         return len(self.data)
@@ -150,12 +151,14 @@ class PyTorchLIDDataSet(Dataset):
         if not isinstance(idx, list):
             return self.data[idx]
         txt = []
+        mask = []
         label = []
         for i in idx:
             item = self.data[i]
             txt.append(item[0])
-            label.append(item[1])
-        return torch.stack(txt), torch.stack(label)
+            mask.append(item[1])
+            label.append(item[2])
+        return torch.stack(txt), torch.stack(mask), torch.stack(label)
 
     def make_weight_dict(self) -> dict:
         return self.decoree.make_weight_dict()
@@ -173,18 +176,23 @@ class PyTorchLIDDataSet(Dataset):
         """
         return self.decoree.get_lang_to_idx()
 
-    def tensorify(self, data_point: Post):
-        word_id = list(self.subword_to_idx(data_point.words))
-        lang_id = [self.lang_to_idx[lang] for lang in data_point.langs]
+    def tensorify(self, data_point: tuple[list[str], list[str]]):
+        words, langs = data_point
+        word_id = list(self.subword_to_idx(words))
+        lang_id = [self.lang_to_idx[lang] for lang in langs]
 
-        # The first subword is assigned the true label, all other subwords are assigned the dummy label 10
+        # The first subword is assigned the true label, all other subwords are assigned the dummy label -1
         lang_id_pad = [[lang_id[word_num]] + [-1] * (len(word_id[word_num]) - 1) for word_num in range(len(word_id))]
 
-        # TODO before flattening, need to keep track of the indices of start subwords
         word_ids_flat = [w_id for word in word_id for w_id in word]
         lang_ids_flat = [l_id for lang in lang_id_pad for l_id in lang]
 
-        return torch.tensor(word_ids_flat, dtype=torch.long), torch.tensor(lang_ids_flat, dtype=torch.long)
+        mask_nest = [[True] + [False] * (len(word_id[num]) - 1) for num in range(len(word_id))]
+        mask = [idx for word in mask_nest for idx in word]
+
+        return torch.tensor(word_ids_flat, dtype=torch.long), \
+               torch.tensor(mask, dtype=torch.bool), \
+               torch.tensor(lang_ids_flat, dtype=torch.long)
 
     def tensorify_all(self):
         new_data = []

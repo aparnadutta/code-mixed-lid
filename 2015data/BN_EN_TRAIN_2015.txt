@@ -3416,7 +3416,6 @@ soon-to-be	en	JJ
 wife	en	N_NN
 #	univ	#
 
-	univ	$
 kisses	en	V_VM
 admin	en	N_NN
 :	univ	RD_PUNC
@@ -7587,7 +7586,6 @@ bharat	hi	N_NNP
 mahan	hi	N_NNP
 .....	univ	RD_PUNC
 
-	univ	$
 me	hi	PSP
 se	hi	PSP
 99	univ	$
@@ -7988,8 +7986,6 @@ kome	bn	N_NN
 jache	bn	N_NN
 ???	univ	RD_PUNC
 
-
-	univ	$
 .	univ	RD_PUNC
 NONE	en	N_NN
 OF	en	PSP
@@ -8002,7 +7998,6 @@ WINNING	en	JJ
 STREAK	en	N_NN
 ..	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 RECOVERY	en	N_NN
 IS	en	V_VM
@@ -8015,7 +8010,6 @@ A	en	DT
 DESTINATION	en	N_NN
 ..	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 NOT	en	RB_AMN
 EVERYTHING	en	N_NN
@@ -8036,7 +8030,6 @@ IS	en	V_VM
 FACED	en	V_VM
 ..	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 IF	en	PSP
 YOU	en	PR_PRP
@@ -8053,7 +8046,6 @@ SLIPPERY	en	JJ
 PLACES	en	N_NN
 ..	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 I	en	PR_PRP
 AM	en	V_VM
@@ -8072,7 +8064,6 @@ MY	en	DT
 RECOVERY	en	N_NN
 ..	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 NOTHING	en	N_NN
 CHANGES	en	V_VM
@@ -8080,7 +8071,6 @@ IF	en	PSP
 NOTHING	en	N_NN
 CHANGES	en	V_VM
 
-	univ	$
 .	univ	RD_PUNC
 STAY	en	V_VM
 AWAY	en	RB_AMN
@@ -8100,7 +8090,6 @@ YOU	en	PR_PRP
 TO	en	PSP
 USING	en	V_VM
 
-	univ	$
 .	univ	RD_PUNC
 IF	en	PSP
 YOU	en	PR_PRP
@@ -9725,7 +9714,6 @@ ug2	acro	$
 )	univ	RD_PUNC
 
 
-	univ	$
 ,	univ	RD_PUNC
 3	univ	$
 ,	univ	RD_PUNC
@@ -13766,7 +13754,6 @@ jibanananda	ne	N_NNP
 das	ne	N_NNV
 
 
-	univ	$
 Reasons	en	N_NN
 Why	en	RB_AMN
 Boys	en	N_NN
@@ -13776,7 +13763,6 @@ Happy	en	JJ
 Creatures	en	N_NN
 ???	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 Our	en	DT
 Last	en	JJ
@@ -13787,7 +13773,6 @@ Us	en	PR_PRP
 Forever	en	RB_AMN
 ,	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 Phone	en	N_NN
 Conversations	en	N_NN
@@ -13799,7 +13784,6 @@ Secs	en	N_NN
 Flat	en	JJ
 ,	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 A	en	DT
 Five	en	$
@@ -13811,7 +13795,6 @@ One	en	$
 Jeans	en	N_NNP
 ,	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 If	en	PSP
 Someone	en	N_NN
@@ -13828,7 +13811,6 @@ Their	en	DT
 Friend	en	N_NN
 ,	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 The	en	DT
 Same	en	JJ
@@ -13841,7 +13823,6 @@ Even	en	RB_AMN
 Decades	en	N_NN
 ,	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 We	en	PR_PRP
 Can	en	V_VM
@@ -13855,7 +13836,6 @@ In	en	PSP
 Minutes	en	N_NN
 ,	univ	RD_PUNC
 
-	univ	$
 =>	univ	RD_RDF
 D	en	N_NNP
 ont	en	N_NNP
@@ -14466,7 +14446,6 @@ champs	en	N_NN
 ..!!!!!	univ	RD_PUNC
 
 
-	univ	$
 Hrs	en	N_NN
 .	univ	RD_PUNC
 
@@ -14518,7 +14497,6 @@ na	bn	RP_RPD
 .	univ	RD_PUNC
 
 
-	univ	$
 apples	en	N_NN
 changed	en	V_VM
 the	en	DT
@@ -14634,7 +14612,6 @@ cl	en	N_NNP
 kaaro	bn	$
 ...	univ	RD_PUNC
 
-	univ	$
 ......	univ	RD_PUNC
 
 female	bn	CC
@@ -14851,7 +14828,6 @@ cause	en	PSP
 .....	univ	RD_PUNC
 
 
-	univ	$
 Dulha	hi	N_NNP
 Dahej	hi	N_NNP
 Mein	hi	N_NNP
@@ -18697,7 +18673,6 @@ khub	bn	V_VM
 chap	bn	V_VAUX
 
 
-	univ	$
 Madhyamik	ne	N_NN
 -	univ	RD_PUNC
 Map	en	N_NNP
@@ -21892,7 +21867,6 @@ feel	en	V_VM
 ......	univ	RD_PUNC
 
 
-	univ	$
 yrs	en	N_NN
 age	bn	RD_RDF
 ...	univ	RD_PUNC
@@ -22840,7 +22814,6 @@ ONE	ne	$
 https://www.facebook.com/shaoni.banerjee	univ	U
 .	univ	RD_PUNC
 
-	univ	$
 ........	univ	RD_PUNC
 
 tmk	bn	RD_RDF
@@ -23340,7 +23313,6 @@ ghurche	bn	V_VM
 .	univ	RD_PUNC
 
 
-	univ	$
 hours	en	N_NN
 of	en	PSP
 RELAY	en	N_NN
@@ -24879,7 +24851,6 @@ classmate	en	N_NN
 #arts	univ	#
 
 
-	univ	$
 I	en	PR_PRP
 first	en	RB_AMN
 saw	en	V_VM
@@ -25788,7 +25759,6 @@ CSE	acro	N_NNP
 )	univ	RD_PUNC
 
 
-	univ	$
 amar	bn	RD_RDF
 khub	bn	RD_RDF
 kharap	bn	N_NN
@@ -27189,7 +27159,6 @@ andhokar	bn	V_VAUX
 .	univ	RD_PUNC
 .	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 kake	bn	N_NNP
 je	bn	N_NNP
@@ -28193,7 +28162,6 @@ daria	bn	N_NN
 ache	bn	PSP
 .....	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 amon	bn	RD_RDF
 akjon	bn	RD_RDF
@@ -28261,7 +28229,6 @@ jawar	bn	N_NNP
 noi	bn	N_NNP
 ......	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 amon	bn	RD_RDF
 lok	bn	RD_RDF
@@ -28310,7 +28277,6 @@ ek2	bn	RD_RDF
 ...	univ	RD_PUNC
 ;))	univ	E
 
-	univ	$
 .	univ	RD_PUNC
 2mar	bn	RD_RDF
 friends	en	N_NN
@@ -28329,7 +28295,6 @@ pore	bn	N_NN
 jbe	bn	V_VM
 .....	univ	RD_PUNC
 
-	univ	$
 .	univ	RD_PUNC
 show	en	V_VM
 off	en	RP_RPD

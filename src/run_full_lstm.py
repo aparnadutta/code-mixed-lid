@@ -12,8 +12,7 @@ def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: Callab
                     hidden_dim, embedding_dim, num_lstm_layers):
     if pretrained_model_path is not None:
         model_dict = torch.load(pretrained_model_path)
-        LSTM_model = LSTMLIDModel(model_dict['subword_to_idx'], model_dict['lang_to_idx'],
-                                  model_dict['embedding_dim'], model_dict['hidden_dim'], model_dict['layers'])
+        LSTM_model = LSTMLIDModel(model_dict['embedding_dim'], model_dict['hidden_dim'], model_dict['layers'])
         LSTM_model.load_state_dict(model_dict['model_state_dict'])
 
     else:
@@ -28,8 +27,7 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
 
     subword_to_idx = numericalizer
-    lang_to_idx = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3, 'hi': 4, 'ne': 5, 'en': 6, 'acro': 7,
-                   'ne+bn_suffix': 8}
+    lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
 
     lstm_model = load_LSTM_model(pretrained_model_path=pretrained_model,
                                  subword_to_idx=subword_to_idx,
@@ -43,10 +41,10 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
 
 
 PRETRAINED_MODEL = None
-EPOCHS = 1
+EPOCHS = 3
 SEED = 42
-HIDDEN_DIM = 75
-EMBEDDING_DIM = 100
+HIDDEN_DIM = 300
+EMBEDDING_DIM = 300
 NUM_LSTM_LAYERS = 1
 OPTIMIZER = 'SGD'
 LR = 0.1

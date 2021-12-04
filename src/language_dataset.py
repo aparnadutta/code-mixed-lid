@@ -9,7 +9,7 @@ from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
-VOCAB_SIZE = 1000
+VOCAB_SIZE = 3000
 
 
 class Post:
@@ -32,7 +32,7 @@ def gen_sentpiece_model(training_data: List[Post]):
     with open(sp_filepath, 'a') as f:
         for post in training_data:
             f.write(' '.join(post.words) + '\n')
-    generate_sp_model(sp_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user')
+    generate_sp_model(sp_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user', model_type='unigram')
     sp_model = load_sp_model('./spm_user.model')
     return sp_model
 
@@ -59,8 +59,9 @@ def load_file(filepath: str) -> list[Post]:
         for line in f:
             line = line.rstrip().split(' ')
             if len(line) > 0:
-                words = [pair.rsplit('/')[0] for pair in line]
-                langs = [pair.rsplit('/')[1] for pair in line]
+                words = [pair.rsplit('/', 1)[0] for pair in line]
+                langs = [pair.rsplit('/', 1)[1] for pair in line]
+                assert len(words) == len(langs)
                 data.append(Post(words, langs))
     return data
 
@@ -91,8 +92,7 @@ class LIDDataset(Dataset):
         self.data: List[Post] = dataset
         self.sp_model = load_sp_model('./spm_user.model')
         self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
-        self.lang_to_idx: Dict[str, int] = {'bn': 0, 'univ': 1, 'en+bn_suffix': 2, 'undef': 3,
-                                            'hi': 4, 'ne': 5, 'en': 6, 'acro': 7, 'ne+bn_suffix': 8}
+        self.lang_to_idx: Dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
         self.weight_dict = self.make_weight_dict()
 
     def make_weight_dict(self) -> dict:
@@ -115,6 +115,7 @@ class LIDDataset(Dataset):
 
     def __getitem__(self, idx) -> tuple[list[str], list[str]]:
         idx_item = self.data[idx]
+        assert len(idx_item.words) == len(idx_item.langs)
         return idx_item.words, idx_item.langs
 
     def __len__(self):
@@ -166,7 +167,12 @@ class PyTorchLIDDataSet(Dataset):
             txt.append(item[0])
             mask.append(item[1])
             label.append(item[2])
-        return torch.stack(txt), torch.stack(mask), torch.stack(label)
+
+        txts = torch.stack(txt)
+        masks = torch.stack(mask)
+        labels = torch.stack(label)
+
+        return txts, masks, labels
 
     def make_weight_dict(self) -> dict:
         return self.decoree.make_weight_dict()

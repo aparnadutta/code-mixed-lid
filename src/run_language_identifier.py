@@ -15,8 +15,8 @@ def test_model(data_set, model: LIDModel):
     model.eval()
     lang_to_idx = model.lang_to_idx
     data_loader = DataLoader(data_set, batch_size=1)
-    # 117 is the max number of words in a post
-    pred_prob = np.zeros((len(data_set), 117, len(lang_to_idx)+1))
+    # 177 is the max number of words in a post
+    pred_prob = np.zeros((len(data_set), 177, len(lang_to_idx)+1))
 
     for i, item in enumerate(tqdm(data_loader, leave=False)):
         words, langs = item

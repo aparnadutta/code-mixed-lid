@@ -40,6 +40,5 @@ class LSTMLIDModel(LIDModel):
 
         torch.save(required_model_information, tmpf.name)
         fname = "trained_LID_model" + fileending + ".pth"
-        # exp.add_artifact(tmpf.name, fname)
         tmpf.close()
         os.unlink(tmpf.name)

@@ -160,7 +160,7 @@ class LIDModel(nn.Module):
             dev_num_tokens = sum(dev_dataset.all_post_lens)
             accuracy = (num_correct_preds / dev_num_tokens).item()
 
-            print(f"Average total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
+            print(f"\nAverage total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)
             self.save_model("E" + str(epoch))

@@ -42,7 +42,8 @@ def save_probs(pred_prob, file_ending=""):
     os.unlink(tmpf.name)
 
 
-def train_model(data_set, test_dataset, lidmodel: 'LIDModel', training_params, weight_dict: Optional[dict] = None):
+def train_model(data_set: PyTorchLIDDataSet, test_dataset: PyTorchLIDDataSet, lidmodel: 'LIDModel',
+                training_params, weight_dict: Optional[dict] = None):
     optimizer, weight_decay, lr, batch_size, epochs = training_params
     if optimizer.strip().lower() == "sgd":
         opti = optim.SGD(lidmodel.parameters(), lr=lr, weight_decay=weight_decay)

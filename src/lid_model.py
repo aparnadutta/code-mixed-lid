@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
-from language_dataset import BatchSampler, VOCAB_SIZE
+from language_dataset import BatchSampler, VOCAB_SIZE, PyTorchLIDDataSet
 
 
 def correct_predictions(scores, masks, labels):
@@ -99,7 +99,8 @@ class LIDModel(nn.Module):
         self.train()
         return arr
 
-    def fit(self, train_dataset, dev_dataset, optimizer, epochs=3, batch_size=64, weight_dict=None):
+    def fit(self, train_dataset: PyTorchLIDDataSet, dev_dataset: PyTorchLIDDataSet,
+            optimizer, epochs=3, batch_size=64, weight_dict=None):
         test_sampler = BatchSampler(batch_size, dev_dataset)
         dataloader_dev = DataLoader(dev_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=test_sampler)
 
@@ -110,7 +111,7 @@ class LIDModel(nn.Module):
                 indx = self.lang_to_idx[lang]
                 weights[indx] = weight_dict[lang]
 
-        # Index of the dummy label is 10
+        # Index of the dummy label is -1
         loss_train = nn.CrossEntropyLoss(weight=weights, ignore_index=-1)
         loss_dev = nn.CrossEntropyLoss(ignore_index=-1)
 
@@ -137,8 +138,10 @@ class LIDModel(nn.Module):
                 optimizer.step()
             avg_total_loss /= sampler.batch_count()
 
-            accuracy = num_correct_preds / len(train_dataset)
-            print(f"Average training error in epoch {epoch + 1}: {avg_total_loss:.5f} "
+            train_num_tokens = sum(train_dataset.all_post_lens)
+            accuracy = (num_correct_preds / train_num_tokens).item()
+
+            print(f"\nAverage training error in epoch {epoch + 1}: {avg_total_loss:.5f} "
                       f"and training accuracy: {accuracy:.4f}")
             step_num = epoch
             print("Training Accuracy:", accuracy, step_num)
@@ -154,7 +157,9 @@ class LIDModel(nn.Module):
                 avg_total_loss += loss_nll.item()
             avg_total_loss /= test_sampler.batch_count()
 
-            accuracy = num_correct_preds / len(dev_dataset)
+            dev_num_tokens = sum(dev_dataset.all_post_lens)
+            accuracy = (num_correct_preds / dev_num_tokens).item()
+
             print(f"Average total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)

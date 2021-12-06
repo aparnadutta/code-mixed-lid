@@ -150,6 +150,7 @@ class PyTorchLIDDataSet(Dataset):
 
     def __init__(self, decoree: LIDDataset):
         self.data = []
+        self.all_post_lens = []
         if decoree is not None:
             self.decoree = decoree
         self.subword_to_idx = decoree.subword_to_idx
@@ -192,6 +193,7 @@ class PyTorchLIDDataSet(Dataset):
 
     def tensorify(self, data_point: tuple[list[str], list[str]]):
         words, langs = data_point
+        self.all_post_lens.append(len(words))
         word_id = list(self.subword_to_idx(words))
         lang_id = [self.lang_to_idx[lang] for lang in langs]
 

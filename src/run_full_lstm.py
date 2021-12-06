@@ -41,12 +41,12 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
 
 
 PRETRAINED_MODEL = None
-EPOCHS = 3
+EPOCHS = 5
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300
 NUM_LSTM_LAYERS = 1
-OPTIMIZER = 'SGD'
+OPTIMIZER = 'adam'
 LR = 0.1
 WEIGHT_DECAY = 0.00001
 BATCH_SIZE = 64

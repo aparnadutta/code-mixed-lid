@@ -17,7 +17,6 @@ def correct_predictions(scores, masks, labels):
 
     num_corr = masked_pred == masked_labels
     num_corr = num_corr.sum()
-
     return num_corr
 
 
@@ -79,19 +78,16 @@ class LIDModel(nn.Module):
     def rank(self, sentence):
         self.eval()
         prep_sent, mask = self.prepare_sequence(sentence)
-
         feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
-        feats_smax = F.log_softmax(feats, dim=-1)  # log-softmaxing over each word
+        feats_smax = F.log_softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
 
         num_labels = feats_smax.size()[-1]
-
-        masked_feats = torch.masked_select(feats_smax.transpose(1, 2), mask)
-        new_seq_len = masked_feats.size()[0] // num_labels
-        masked_feats = masked_feats.reshape(new_seq_len, num_labels)
+        masked_feats = torch.masked_select(feats_smax.T, mask)
+        masked_feats = masked_feats.reshape(len(sentence), num_labels)
 
         arr = []
 
-        for word_i in range(new_seq_len):
+        for word_i in range(len(sentence)):
             word_rank = []
             for lang, lang_idx in self.lang_to_idx.items():
                 word_rank.append((lang, masked_feats[word_i][lang_idx].item()))
@@ -169,9 +165,6 @@ class LIDModel(nn.Module):
     def save_model(self, fileending=""):
         """Saves a pytorch model fully
         """
-        tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".pth")
         required_model_information = {'model_state_dict': self.state_dict()}
-        torch.save(required_model_information, tmpf.name)
-        fname = "../trained_model_dict" + fileending + ".pth"
-        tmpf.close()
-        os.unlink(tmpf.name)
+        fname = "./trained_model_dict" + fileending + ".pth"
+        torch.save(required_model_information, fname)

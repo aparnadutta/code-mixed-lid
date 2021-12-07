@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 from lid_model import LIDModel
-import tempfile
-import os
+
 
 DROPOUT = 0.4
 
@@ -32,13 +31,9 @@ class LSTMLIDModel(LIDModel):
         """Saves a dict containing statedict and other required model parameters and adds it as artifact
         Arguments:
         """
-        tmpf = tempfile.NamedTemporaryFile(delete=False, suffix=".pth")
         required_model_information = {'model_state_dict': self.state_dict(),
                                       'embedding_dim': self.embedding_dim,
                                       'hidden_dim': self.hidden_dim,
                                       'layers': self.num_layers}
-
-        torch.save(required_model_information, tmpf.name)
         fname = "trained_LID_model" + fileending + ".pth"
-        tmpf.close()
-        os.unlink(tmpf.name)
+        torch.save(required_model_information, fname)

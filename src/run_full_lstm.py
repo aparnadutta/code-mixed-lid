@@ -12,7 +12,9 @@ def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: Callab
                     hidden_dim, embedding_dim, num_lstm_layers):
     if pretrained_model_path is not None:
         model_dict = torch.load(pretrained_model_path)
-        LSTM_model = LSTMLIDModel(model_dict['embedding_dim'], model_dict['hidden_dim'], model_dict['layers'])
+        LSTM_model = LSTMLIDModel(subword_to_idx=subword_to_idx, lang_to_idx=lang_to_idx,
+                                  hidden_dim=model_dict['hidden_dim'], embedding_dim=model_dict['embedding_dim'],
+                                  layers=model_dict['layers'])
         LSTM_model.load_state_dict(model_dict['model_state_dict'])
 
     else:
@@ -40,8 +42,8 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     run_training(lstm_model, training_params, to_train)
 
 
-PRETRAINED_MODEL = None
-EPOCHS = 5
+PRETRAINED_MODEL = './trained_LID_modelE18.pth'
+EPOCHS = 20
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300

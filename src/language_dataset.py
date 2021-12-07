@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import random
-import os
+
 from collections import Counter
 from typing import Optional, List, Dict, Tuple, Callable
 
@@ -9,7 +8,7 @@ from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
-VOCAB_SIZE = 3000
+VOCAB_SIZE = 6285
 
 
 class Post:

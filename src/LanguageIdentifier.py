@@ -29,8 +29,8 @@ class LanguageIdentifier:
 
 
 lid = LanguageIdentifier(Path("../trained_LID_model.pth"))
-# print(lid.predict("amar phone e screen shots er option ache"))
-print(lid.predict("oder gari ta drive kore school e jacchi"))
+print(lid.predict("amar phone e screen shots er option ache"))
+print(lid.predict("oder car ta drive kore school e jacchi"))
 
 
 # To handle POST, we need to declare a schema for the body. BaseModel from pydantic works

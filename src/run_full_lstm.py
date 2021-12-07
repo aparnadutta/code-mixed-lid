@@ -43,7 +43,9 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
 
 
 PRETRAINED_MODEL = './trained_LID_modelE18.pth'
-EPOCHS = 20
+# PRETRAINED_MODEL = None
+
+EPOCHS = 30
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300

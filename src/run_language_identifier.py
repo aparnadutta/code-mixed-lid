@@ -26,7 +26,6 @@ def test_model(data_set, model: LIDModel):
         for word_idx in range(len(words)):
             pred_prob[i, word_idx, 0] = model.lang_to_idx[preds[word_idx]]
             pred_prob[i, word_idx, 1] = model.lang_to_idx[true_labels[word_idx]]
-    print(pred_prob)
     return pred_prob
 
 

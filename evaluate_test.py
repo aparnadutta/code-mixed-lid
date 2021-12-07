@@ -8,8 +8,6 @@ preds = [pair[0] for pair in all_preds if not np.array_equal(pair, np.array([-1,
 true_labels = [pair[1] for pair in all_preds if not np.array_equal(pair, np.array([-1, -1]))]
 
 print(len(all_preds))
-report = classification_report(true_labels, preds)
-print(report)
 
 # num_correct, total = 0, 0
 

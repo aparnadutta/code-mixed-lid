@@ -27,12 +27,10 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
 
     training_params = optimizer, weight_decay, lr, batch_size, epochs
     numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
-
-    subword_to_idx = numericalizer
     lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
 
     lstm_model = load_LSTM_model(pretrained_model_path=pretrained_model,
-                                 subword_to_idx=subword_to_idx,
+                                 subword_to_idx=numericalizer,
                                  lang_to_idx=lang_to_idx,
                                  hidden_dim=HIDDEN_DIM,
                                  embedding_dim=EMBEDDING_DIM,
@@ -42,7 +40,7 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     run_training(lstm_model, training_params, to_train)
 
 
-PRETRAINED_MODEL = './trained_LID_modelE18.pth'
+PRETRAINED_MODEL = './trained_models/trained_LID_model.pth'
 # PRETRAINED_MODEL = None
 
 EPOCHS = 30

@@ -1,5 +1,3 @@
-import os
-import tempfile
 
 from torch import optim
 from torch.utils.data import DataLoader
@@ -22,11 +20,29 @@ def test_model(data_set, model: LIDModel):
         words, langs = item
         words = [w[0] for w in words]
         true_labels = [lang[0] for lang in langs]
-        preds = model.predict(words)
+        preds = model.predict(words)['predictions']
         for word_idx in range(len(words)):
-            pred_prob[i, word_idx, 0] = model.lang_to_idx[preds[word_idx]]
-            pred_prob[i, word_idx, 1] = model.lang_to_idx[true_labels[word_idx]]
+            pred_prob[i, word_idx, 0] = lang_to_idx[preds[word_idx]]
+            pred_prob[i, word_idx, 1] = lang_to_idx[true_labels[word_idx]]
+    get_stats(pred_prob)
     return pred_prob
+
+
+def get_stats(all_preds: np.ndarray):
+    conf_mat = np.zeros((6, 6))
+    for i in range(len(all_preds)):
+        for pred, gold in all_preds[i]:
+            if pred >= 0:
+                conf_mat[pred][gold] += 1
+
+    accuracy = conf_mat.trace() / np.sum(conf_mat)
+    precision = np.diag(conf_mat) / np.sum(conf_mat, axis=1)
+    recall = np.diag(conf_mat) / np.sum(conf_mat, axis=0)
+    f1 = (2 * precision * recall) / (precision + recall)
+    print("\naccuracy:", accuracy)
+    print("precision:", precision)
+    print("recall:", recall)
+    print("f1:", f1)
 
 
 def save_probs(pred_prob, file_ending=""):
@@ -58,7 +74,6 @@ def run_training(model, training_params, to_train=True):
 
     train_data_converted = PyTorchLIDDataSet(train_dataset)
     dev_converted = PyTorchLIDDataSet(dev_dataset)
-    test_data_converted = PyTorchLIDDataSet(test_dataset)
 
     weight_dict = train_dataset.weight_dict
 

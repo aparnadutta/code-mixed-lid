@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from lid_model import LIDModel
+from src.lid_model import LIDModel
 
 
 DROPOUT = 0.4
@@ -25,7 +25,6 @@ class LSTMLIDModel(LIDModel):
         outputs, _ = self.lstm(embed)
         outputs = self.linear(outputs)
         return outputs.transpose(1, 2)
-        # return outputs
 
     def save_model(self, fileending=""):
         """Saves a dict containing statedict and other required model parameters and adds it as artifact
@@ -35,5 +34,5 @@ class LSTMLIDModel(LIDModel):
                                       'embedding_dim': self.embedding_dim,
                                       'hidden_dim': self.hidden_dim,
                                       'layers': self.num_layers}
-        fname = "trained_LID_model" + fileending + ".pth"
+        fname = "trained_models/trained_LID_model" + fileending + ".pth"
         torch.save(required_model_information, fname)

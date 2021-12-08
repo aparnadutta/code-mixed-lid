@@ -1,12 +1,10 @@
-import os
-import tempfile
 import time
 from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
-from language_dataset import BatchSampler, VOCAB_SIZE, PyTorchLIDDataSet
+from src.language_dataset import BatchSampler, VOCAB_SIZE, PyTorchLIDDataSet
 
 
 def correct_predictions(scores, masks, labels):
@@ -18,12 +16,6 @@ def correct_predictions(scores, masks, labels):
     num_corr = masked_pred == masked_labels
     num_corr = num_corr.sum()
     return num_corr
-
-
-def argmax(vec):
-    # return the argmax as a python int
-    _, idx = torch.max(vec, 1)
-    return idx.item()
 
 
 class LIDModel(nn.Module):
@@ -45,7 +37,7 @@ class LIDModel(nn.Module):
         labels = labels.to(self.device)
         return words, masks, labels
 
-    def prepare_sequence(self, sentence):
+    def prepare_sequence(self, sentence: list[str]):
         word_id = list(self.subword_to_idx(sentence))
         mask_nest = [[True] + [False] * (len(word_id[num]) - 1) for num in range(len(word_id))]
 
@@ -57,25 +49,26 @@ class LIDModel(nn.Module):
 
         return id_tensor, mask_tensor
 
-    def forward(self, sentence):
+    def forward(self, sentence: list[str]):
         raise NotImplemented
 
-    def predict(self, sentence):
+    def predict(self, sentence: list[str]) -> dict[str: list]:
         self.eval()
         prep_sent, mask = self.prepare_sequence(sentence)
 
         feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
-        feats_smax = F.log_softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
+        feats_smax = F.softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
 
-        preds = torch.argmax(feats_smax, dim=-1)
-        masked_preds = torch.masked_select(preds, mask)
+        preds_conf = torch.max(feats_smax, dim=-1)
+        confidence, predictions = [torch.masked_select(p, mask).tolist() for p in preds_conf]
+        lang_preds = [self.idx_to_lang[pred] for pred in predictions]
 
-        lang_preds = [self.idx_to_lang[pred.item()] for pred in masked_preds]
+        pred_output: dict = {'tokens': sentence, 'predictions': lang_preds, 'confidence': confidence}
 
         self.train()
-        return lang_preds
+        return pred_output
 
-    def rank(self, sentence):
+    def rank(self, sentence: list[str]):
         self.eval()
         prep_sent, mask = self.prepare_sequence(sentence)
         feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
@@ -159,7 +152,8 @@ class LIDModel(nn.Module):
             print(f"\nAverage total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)
-            # self.save_model("E" + str(epoch))
+            if accuracy > 0.92:
+                self.save_model("E" + str(epoch))
             print("Time spent in epoch {0}: {1:.2f} ".format(epoch + 1, time.time() - epoch_start_time))
 
     def save_model(self, fileending=""):

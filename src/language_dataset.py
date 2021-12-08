@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 
 from collections import Counter
-from typing import Optional, List, Dict, Tuple, Callable
+from typing import Optional, Callable
 
 import torch
 from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
-VOCAB_SIZE = 6285
+# VOCAB_SIZE = 6285
+# VOCAB_SIZE = 4882
+VOCAB_SIZE = 5059
 
 
 class Post:
-    """A single social media data instance"""
+    """A single social media data instance consisting of
+    a list of word tokens and a list of language tags"""
 
-    def __init__(self, words: List[str], langs: List[str]):
+    def __init__(self, words: list[str], langs: list[str]):
         self.words = words
         self.langs = langs
 
@@ -25,18 +28,25 @@ class Post:
         return len(self.words)
 
 
-# TODO should "unigram" be specified? And increase vocab_size, and use other data
-def gen_sentpiece_model(training_data: List[Post]):
+def gen_sentpiece_model(training_data: list[Post]):
+    """
+    Uses training data to generate sentencepiece source data. Creates sentencepiece model of provided
+    vocab size and returns the sentencepiece model
+    :return: sentencepiece model
+    """
     sp_filepath = './sp_source_data.txt'
-    with open(sp_filepath, 'a') as f:
+    with open(sp_filepath, 'w') as f:
         for post in training_data:
             f.write(' '.join(post.words) + '\n')
     generate_sp_model(sp_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user', model_type='unigram')
-    sp_model = load_sp_model('./spm_user.model')
-    return sp_model
 
 
-def write_prep_data(data: tuple[list[Post], list[Post], list[Post]]):
+def write_prep_data(data: tuple[list[Post], list[Post], list[Post]]) -> None:
+    """
+    Takes in raw train, dev and test data, and writes to a file with one post per line,
+    with tokens and language tags split with a backslash
+    :return: 3 lists of posts representing the train data, development data, and test data
+    """
     fnames = ['./prepped_data/train.txt', './prepped_data/dev.txt', './prepped_data/test.txt']
     for fname, data_chunk in zip(fnames, data):
         with open(fname, 'w') as file:
@@ -46,6 +56,10 @@ def write_prep_data(data: tuple[list[Post], list[Post], list[Post]]):
 
 
 def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[Post]]:
+    """
+    Reads data from the provided directory path and splits the data into train, dev, and test
+    :return: 3 lists of posts representing the train data, development data, and test data
+    """
     train = load_file(data_filepath + 'train.txt')
     dev = load_file(data_filepath + 'dev.txt')
     test = load_file(data_filepath + 'test.txt')
@@ -53,6 +67,10 @@ def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[
 
 
 def load_file(filepath: str) -> list[Post]:
+    """
+    Reads the prepared data from one file and converts it into a list of Post objects
+    :return: one list of Post objects
+    """
     data = []
     with open(filepath) as f:
         for line in f:
@@ -65,7 +83,12 @@ def load_file(filepath: str) -> list[Post]:
     return data
 
 
-def load_posts(filepath: Optional[str]) -> List[Post]:
+def load_posts(filepath: Optional[str]) -> list[Post]:
+    """
+    Reads the raw data from a file and converts it into a list of Post objects.
+    This will later be shuffled and written into three separate files for training, development, and testing.
+    :return: one list of Post objects
+    """
     all_data = []
     words, langs = [], []
 
@@ -88,10 +111,10 @@ def load_posts(filepath: Optional[str]) -> List[Post]:
 
 class LIDDataset(Dataset):
     def __init__(self, dataset):
-        self.data: List[Post] = dataset
+        self.data: list[Post] = dataset
         self.sp_model = load_sp_model('./spm_user.model')
         self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
-        self.lang_to_idx: Dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
+        self.lang_to_idx: dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
         self.weight_dict = self.make_weight_dict()
 
     def make_weight_dict(self) -> dict:
@@ -139,8 +162,6 @@ class LIDDataset(Dataset):
             lang_to_idx[lang] = len(lang_to_idx)
         return lang_to_idx
 
-
-# ----------------------------------------------------------------------------------------------------------------------
 
 class PyTorchLIDDataSet(Dataset):
     """

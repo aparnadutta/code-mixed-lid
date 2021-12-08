@@ -133,5 +133,5 @@ dmypy.json
 #spm_user.model
 spm_user.vocab
 sp_source_data.txt
-trained_LID_model.pth
+trained_models/trained_LID_model.pth
 :.vscode/

@@ -22,3 +22,12 @@ class LanguageIdentifier:
 
     def predict(self, text: str) -> tuple[str, dict]:
         return text, self.model.predict(self.tokenize(text))
+
+
+# LID = LanguageIdentifier(Path("trained_models/trained_LID_model.pth"))
+#
+# sent = 'Kakuli Bhattachajeer shaathey dekha kortey jachhi... thesis er kichu topic chhilona discuss kortey ..'
+#
+# text, preds = LID.predict(sent)
+# for pred in preds.items():
+#     print(pred)

@@ -17,17 +17,26 @@ class LanguageIdentifier:
         self.model.load_state_dict(model_information_dict['model_state_dict'], strict=False)
         self.tokenizer = TreebankWordTokenizer()
 
-    def tokenize(self, text: str) -> list[str]:
-        return self.tokenizer.tokenize(text)
+    def tokenize(self, input_sentence: str) -> list[str]:
+        return self.tokenizer.tokenize(input_sentence)
 
-    def predict(self, text: str) -> tuple[str, dict]:
-        return text, self.model.predict(self.tokenize(text))
+    def predict(self, input_sentence: str) -> tuple[str, dict]:
+        return input_sentence, self.model.predict(self.tokenize(input_sentence))
+
+    def rank(self, input_sentence: str) -> dict[str, list]:
+        return self.model.rank(self.tokenize(input_sentence))
 
 
-# LID = LanguageIdentifier(Path("trained_models/trained_LID_model.pth"))
-#
-# sent = 'Kakuli Bhattachajeer shaathey dekha kortey jachhi... thesis er kichu topic chhilona discuss kortey ..'
-#
-# text, preds = LID.predict(sent)
+LID = LanguageIdentifier(Path("trained_models/trained_LID_model.pth"))
+
+sent = 'Kakuli Bhattachajeer shaathey dekha kortey jachhi... thesis er kichu topic chhilona discuss kortey ..'
+
+text, preds = LID.predict(sent)
+
+ranking = LID.rank(sent)
+
 # for pred in preds.items():
 #     print(pred)
+#
+# for r in ranking.items():
+#     print(r)

@@ -57,7 +57,8 @@ class LIDModel(nn.Module):
         prep_sent, mask = self.prepare_sequence(sentence)
 
         feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
-        feats_smax = F.softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
+        # softmaxing over each word (not log, so that we can use these scores for model confidence)
+        feats_smax = F.softmax(feats, dim=-1).squeeze()
 
         preds_conf = torch.max(feats_smax, dim=-1)
         confidence, predictions = [torch.masked_select(p, mask).tolist() for p in preds_conf]
@@ -72,19 +73,20 @@ class LIDModel(nn.Module):
         self.eval()
         prep_sent, mask = self.prepare_sequence(sentence)
         feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
-        feats_smax = F.log_softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
+        feats_smax = F.softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
+        feats_smax = feats_smax.unsqueeze(0) if len(list(feats_smax.size())) < 2 else feats_smax
 
-        num_labels = feats_smax.size()[-1]
-        masked_feats = torch.masked_select(feats_smax.T, mask)
-        masked_feats = masked_feats.reshape(len(sentence), num_labels)
+        # arr = []
+        arr = {lang: [] for lang in self.lang_to_idx.keys()}
+        for feat, f_mask in zip(feats_smax, mask):
+            if f_mask:
+                for lang, lang_idx in self.lang_to_idx.items():
+                    arr[lang].append(feat[lang_idx].item())
+                # word_probs = [{lang: feat[lang_idx].item()} for lang, lang_idx in self.lang_to_idx.items()]
+                # arr.append(word_probs)
 
-        arr = []
+        # sorted_rank = [sorted(r, key=lambda x: x[1], reverse=True)[:2] for r in arr]
 
-        for word_i in range(len(sentence)):
-            word_rank = []
-            for lang, lang_idx in self.lang_to_idx.items():
-                word_rank.append((lang, masked_feats[word_i][lang_idx].item()))
-            arr.append(word_rank)
         self.train()
         return arr
 

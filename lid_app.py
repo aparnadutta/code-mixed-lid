@@ -37,10 +37,30 @@ def make_conf_chart(data_output: dict):
     source = pd.DataFrame(data_output)
     chart = alt.Chart(source).mark_bar().encode(
         x=alt.X('tokens:N', sort=data_output['tokens']),
-        y=alt.Y('confidence:Q', scale=alt.Scale(domain=(0.4, 1.0), clamp=True)),
+        y=alt.Y('confidence:Q', scale=alt.Scale(domain=(0.0, 1.0), clamp=True)),
         color=alt.Color('confidence:O',
                         scale=alt.Scale(domain=sorted_conf,
                                         range=color_range))
+    ).properties(width=1200).configure_axisX(labelAngle=0)
+    return chart
+
+
+def make_rank_chart(data_output: dict, rank: dict[str, list]):
+    tokens = [t for tok_chunk in [[tok] * 6 for tok in data_output['tokens']] for t in tok_chunk]
+    lang_tags = [tag for word in [list(rank.keys()) * len(data_output['tokens'])] for tag in word]
+    confidence = [word_confs[i] for i in range(len(data_output['tokens'])) for lang, word_confs in rank.items()]
+    color_pairs = [(lang, val['color']) for lang, val in lang_color_dict.items()]
+
+    assert len(tokens) == len(lang_tags) == len(confidence)
+    source = pd.DataFrame({'tokens': tokens,
+                           'lang': lang_tags,
+                           'confidence': confidence})
+
+    chart = alt.Chart(source).mark_bar(opacity=0.75).encode(
+        x=alt.X('tokens:N', sort=data_output['tokens']),
+        y=alt.Y('confidence:Q', scale=alt.Scale(domain=(0, 1.0), clamp=True)),
+        color=alt.Color('lang:N', scale=alt.Scale(
+            domain=[it[0] for it in color_pairs], range=[it[1] for it in color_pairs]))
     ).properties(width=1200).configure_axisX(labelAngle=0)
 
     return chart
@@ -59,7 +79,6 @@ LID = LanguageIdentifier(Path("trained_models/trained_LID_model.pth"))
 # Page layout
 # Page expands to full width
 def write_web_app():
-    st.write()
     st.set_page_config(page_title='Bangla-English Code-mixing Identifier', layout='wide')
     st.write("""
     # Bangla-English Code-mixing Identifier
@@ -86,15 +105,14 @@ def write_web_app():
 
     if submit_button:
         text, output = LID.predict(sentence)
-        for conf in output['confidence']:
-            if conf > 1.0:
-                st.text(conf)
+        rank = LID.rank(sentence)
 
         st.subheader('Predicted Labels')
         annotated_text(*color_text(output))
-
+        st.text("")
         st.subheader('Word-level Model Confidence')
-        st.altair_chart(make_conf_chart(output))
+        # st.altair_chart(make_conf_chart(output))
+        st.altair_chart(make_rank_chart(output, rank))
 
 
 if __name__ == '__main__':

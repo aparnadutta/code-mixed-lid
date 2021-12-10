@@ -46,9 +46,10 @@ def make_conf_chart(data_output: dict):
 
 
 def make_rank_chart(data_output: dict, rank: dict[str, list]):
+    sent_len = len(data_output['tokens'])
     tokens = [t for tok_chunk in [[tok] * 6 for tok in data_output['tokens']] for t in tok_chunk]
-    lang_tags = [tag for word in [list(rank.keys()) * len(data_output['tokens'])] for tag in word]
-    confidence = [word_confs[i] for i in range(len(data_output['tokens'])) for lang, word_confs in rank.items()]
+    lang_tags = [tag for word in [list(rank.keys()) * sent_len] for tag in word]
+    confidence = [word_confs[i] for i in range(sent_len) for lang, word_confs in rank.items()]
     color_pairs = [(lang, val['color']) for lang, val in lang_color_dict.items()]
 
     assert len(tokens) == len(lang_tags) == len(confidence)
@@ -57,12 +58,11 @@ def make_rank_chart(data_output: dict, rank: dict[str, list]):
                            'confidence': confidence})
 
     chart = alt.Chart(source).mark_bar(opacity=0.75).encode(
-        x=alt.X('tokens:N', sort=data_output['tokens']),
+        x=alt.X('tokens:N', sort=tokens),
         y=alt.Y('confidence:Q', scale=alt.Scale(domain=(0, 1.0), clamp=True)),
-        color=alt.Color('lang:N', scale=alt.Scale(
-            domain=[it[0] for it in color_pairs], range=[it[1] for it in color_pairs]))
-    ).properties(width=1200).configure_axisX(labelAngle=0)
-
+        color=alt.Color('lang:N', scale=alt.Scale(domain=[it[0] for it in color_pairs],
+                                                  range=[it[1] for it in color_pairs]))
+    ).properties(width=1200, height=200).configure_axisX(labelAngle=0)
     return chart
 
 
@@ -91,7 +91,6 @@ def write_web_app():
     all_sents = get_example_sents('example_sentences.txt')
     rand_sent = random.choice(all_sents)
 
-    st.text("")
     gen_button = st.checkbox(label='Generate test sentences')
 
     form = st.form(key='my_form')
@@ -109,7 +108,7 @@ def write_web_app():
 
         st.subheader('Predicted Labels')
         annotated_text(*color_text(output))
-        st.text("")
+        # st.text("")
         st.subheader('Word-level Model Confidence')
         # st.altair_chart(make_conf_chart(output))
         st.altair_chart(make_rank_chart(output, rank))

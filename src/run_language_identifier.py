@@ -39,10 +39,10 @@ def get_stats(lang_to_idx, all_preds: np.ndarray):
     precision = np.diag(conf_mat) / np.sum(conf_mat, axis=1)
     recall = np.diag(conf_mat) / np.sum(conf_mat, axis=0)
     f1 = (2 * precision * recall) / (precision + recall)
-    print("\naccuracy:", accuracy)
-    print("precision:", precision)
-    print("recall:", recall)
-    print("f1:", f1)
+    # print("\naccuracy:", accuracy)
+    # print("precision:", precision)
+    # print("recall:", recall)
+    # print("f1:", f1)
 
 
 def save_probs(pred_prob, file_ending=""):

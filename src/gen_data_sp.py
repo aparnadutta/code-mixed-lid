@@ -2,7 +2,6 @@ import random
 from collections import Counter
 
 from language_dataset import load_posts, write_prep_data, gen_sentpiece_model, Post, load_file
-import numpy as np
 
 
 def load_raw_data() -> list[Post]:
@@ -23,13 +22,15 @@ def print_stats(all_data: list[Post]) -> None:
     print("num instances:", len(all_data))
     print("num tokens:", num_tokens)
     print("lang counts:", lang_counts)
+    for lang, count in lang_counts.items():
+        print(lang, "{:.2%}".format(count / num_tokens))
     print("max num words in post:", np.max(inst_lens))
     print("average num words in post:", np.mean(inst_lens))
 
 
 def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:
-    train, dev, test = [], [], []
     random.shuffle(all_data)
+    train, dev, test = [], [], []
 
     ten_perc = int(len(all_data) * 0.1)
     train_end = ten_perc * 8

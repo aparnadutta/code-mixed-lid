@@ -24,12 +24,12 @@ def test_model(data_set, model: LIDModel):
         for word_idx in range(len(words)):
             pred_prob[i, word_idx, 0] = lang_to_idx[preds[word_idx]]
             pred_prob[i, word_idx, 1] = lang_to_idx[true_labels[word_idx]]
-    get_stats(pred_prob)
+    get_stats(lang_to_idx, pred_prob)
     return pred_prob
 
 
-def get_stats(all_preds: np.ndarray):
-    conf_mat = np.zeros((6, 6))
+def get_stats(lang_to_idx, all_preds: np.ndarray):
+    conf_mat = np.zeros((len(lang_to_idx), len(lang_to_idx)))
     for i in range(len(all_preds)):
         for pred, gold in all_preds[i]:
             if pred >= 0:

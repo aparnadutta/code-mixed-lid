@@ -27,7 +27,7 @@ def print_stats(all_data: list[Post]) -> None:
     print("average num words in post:", np.mean(inst_lens))
 
 
-def split_write_data(all_data: list[Post]) -> None:
+def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:
     train, dev, test = [], [], []
     random.shuffle(all_data)
 
@@ -39,7 +39,8 @@ def split_write_data(all_data: list[Post]) -> None:
     test.extend(all_data[train_end: dev_end])
     dev.extend(all_data[dev_end:])
 
-    write_prep_data((train, dev, test))
+    write_prep_data(dirpath, (train, dev, test))
+    return train, dev, test
 
 
 def generate_sentencepiece(data_filepath: str = './prepped_data/'):
@@ -48,10 +49,18 @@ def generate_sentencepiece(data_filepath: str = './prepped_data/'):
 
 
 def main():
+    dirpath = './prepped_data/'
     data = load_raw_data()
+    train, dev, test = split_write_data(dirpath, data)
+    generate_sentencepiece(dirpath)
+    print("\nTotal data stats:")
     print_stats(data)
-    split_write_data(data)
-    generate_sentencepiece()
+    print("\nTrain data stats:")
+    print_stats(train)
+    print("\nDev data stats:")
+    print_stats(dev)
+    print("\nTest data stats:")
+    print_stats(test)
 
 
 if __name__ == "__main__":

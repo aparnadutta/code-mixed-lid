@@ -76,17 +76,11 @@ class LIDModel(nn.Module):
         feats_smax = F.softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
         feats_smax = feats_smax.unsqueeze(0) if len(list(feats_smax.size())) < 2 else feats_smax
 
-        # arr = []
         arr = {lang: [] for lang in self.lang_to_idx.keys()}
         for feat, f_mask in zip(feats_smax, mask):
             if f_mask:
                 for lang, lang_idx in self.lang_to_idx.items():
                     arr[lang].append(feat[lang_idx].item())
-                # word_probs = [{lang: feat[lang_idx].item()} for lang, lang_idx in self.lang_to_idx.items()]
-                # arr.append(word_probs)
-
-        # sorted_rank = [sorted(r, key=lambda x: x[1], reverse=True)[:2] for r in arr]
-
         self.train()
         return arr
 
@@ -154,7 +148,7 @@ class LIDModel(nn.Module):
             print(f"\nAverage total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)
-            if accuracy > 0.92:
+            if accuracy > 0.93:
                 self.save_model("E" + str(epoch))
             print("Time spent in epoch {0}: {1:.2f} ".format(epoch + 1, time.time() - epoch_start_time))
 

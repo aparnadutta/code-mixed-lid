@@ -8,9 +8,8 @@ from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
-# VOCAB_SIZE = 6285
-# VOCAB_SIZE = 4882
-VOCAB_SIZE = 5059
+# VOCAB_SIZE = 5059
+VOCAB_SIZE = 5500
 
 
 class Post:
@@ -28,31 +27,34 @@ class Post:
         return len(self.words)
 
 
-def gen_sentpiece_model(training_data: list[Post]):
+def load_posts(filepath: Optional[str]) -> list[Post]:
     """
-    Uses training data to generate sentencepiece source data. Creates sentencepiece model of provided
-    vocab size and returns the sentencepiece model
-    :return: sentencepiece model
+    Reads the raw data from a file and converts it into a list of Post objects.
+    This will later be shuffled and written into three separate files for training, development, and testing.
+    :return: one list of Post objects
     """
-    sp_filepath = './sp_source_data.txt'
-    with open(sp_filepath, 'w') as f:
-        for post in training_data:
-            f.write(' '.join(post.words) + '\n')
-    generate_sp_model(sp_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user', model_type='unigram')
+    all_data = []
+    words, langs = [], []
 
-
-def write_prep_data(data: tuple[list[Post], list[Post], list[Post]]) -> None:
-    """
-    Takes in raw train, dev and test data, and writes to a file with one post per line,
-    with tokens and language tags split with a backslash
-    :return: 3 lists of posts representing the train data, development data, and test data
-    """
-    fnames = ['./prepped_data/train.txt', './prepped_data/dev.txt', './prepped_data/test.txt']
-    for fname, data_chunk in zip(fnames, data):
-        with open(fname, 'w') as file:
-            for post in data_chunk:
-                tagged = ['/'.join((word, tag)) for word, tag in zip(post.words, post.langs)]
-                file.write(" ".join(tagged) + '\n')
+    if filepath is not None:
+        with open(filepath) as file:
+            for line in file:
+                line = line.rstrip()
+                if len(line) == 0:
+                    if len(words) != 0:
+                        lang_set = set(langs)
+                        # only add posts that contain either Bengali or English
+                        # # (not if all tokens are undef, hi, univ, etc)
+                        if 'bn' in lang_set or 'en' in lang_set:
+                            all_data.append(Post(words, langs))
+                        words, langs = [], []
+                else:
+                    word, lang, _ = line.split('\t')
+                    lang = 'mixed' if '+' in lang else lang
+                    # if "http" not in word and "@" not in word and lang != 'undef':
+                    words.append(word)
+                    langs.append(lang)
+    return all_data
 
 
 def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[Post]]:
@@ -64,6 +66,33 @@ def create_datasplits(data_filepath: str) -> tuple[list[Post], list[Post], list[
     dev = load_file(data_filepath + 'dev.txt')
     test = load_file(data_filepath + 'test.txt')
     return train, dev, test
+
+
+def write_prep_data(dirpath: str, data: tuple[list[Post], list[Post], list[Post]]) -> None:
+    """
+    Takes in raw train, dev and test data, and writes to a file with one post per line,
+    with tokens and language tags split with a backslash
+    :return: 3 lists of posts representing the train data, development data, and test data
+    """
+    fnames = [f'{dirpath}train.txt', f'{dirpath}dev.txt', f'{dirpath}test.txt']
+    for fname, data_chunk in zip(fnames, data):
+        with open(fname, 'w') as file:
+            for post in data_chunk:
+                tagged = ['/'.join((word, tag)) for word, tag in zip(post.words, post.langs)]
+                file.write(" ".join(tagged) + '\n')
+
+
+def gen_sentpiece_model(training_data: list[Post]):
+    """
+    Uses training data to generate sentencepiece source data. Creates sentencepiece model of provided
+    vocab size and returns the sentencepiece model
+    :return: sentencepiece model
+    """
+    sp_filepath = './sp_source_data.txt'
+    with open(sp_filepath, 'w') as f:
+        for post in training_data:
+            f.write(' '.join(post.words) + '\n')
+    generate_sp_model(sp_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user', model_type='unigram')
 
 
 def load_file(filepath: str) -> list[Post]:
@@ -83,38 +112,13 @@ def load_file(filepath: str) -> list[Post]:
     return data
 
 
-def load_posts(filepath: Optional[str]) -> list[Post]:
-    """
-    Reads the raw data from a file and converts it into a list of Post objects.
-    This will later be shuffled and written into three separate files for training, development, and testing.
-    :return: one list of Post objects
-    """
-    all_data = []
-    words, langs = [], []
-
-    if filepath is not None:
-        with open(filepath) as file:
-            for line in file:
-                line = line.rstrip()
-                if len(line) == 0:
-                    if len(words) != 0:
-                        all_data.append(Post(words, langs))
-                        words, langs = [], []
-                else:
-                    word, lang, _ = line.split('\t')
-                    lang = lang.split('+')[0]
-                    if "http" not in word and "@" not in word and lang != 'undef':
-                        words.append(word)
-                        langs.append(lang)
-    return all_data
-
-
 class LIDDataset(Dataset):
     def __init__(self, dataset):
         self.data: list[Post] = dataset
         self.sp_model = load_sp_model('./spm_user.model')
         self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
-        self.lang_to_idx: dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
+        self.lang_to_idx: dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
+
         self.weight_dict = self.make_weight_dict()
 
     def make_weight_dict(self) -> dict:

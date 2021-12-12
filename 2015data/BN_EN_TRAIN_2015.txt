@@ -2965,14 +2965,6 @@ true	en	JJ
 :(	univ	E
 
 
-Hablando	undef	N_NNP
-de	undef	PSP
-una	undef	RD_RDF
-triple	en	JJ
-amenaza	undef	N_NN
-.	univ	RD_PUNC
-
-
 Jare	bn	N_NN
 chai	bn	JJ
 tare	bn	N_NN
@@ -6580,12 +6572,6 @@ then	en	RB_AMN
 though	en	PSP
 ..	univ	RD_PUNC
 
-Se	undef	RD_RDF
-onr	undef	RD_RDF
-sverder	undef	RD_RDF
-sitja	undef	RD_RDF
-hvass	undef	N_NN
-!	univ	RD_PUNC
 
 (	univ	RD_PUNC
 may	en	V_VM
@@ -14050,46 +14036,6 @@ asamaye	bn	N_NN
 enjoying	en	V_VM
 the	en	DT
 song	en	N_NN
-
-
-Acabo	undef	N_NNP
-de	undef	PSP
-aceptar	undef	RD_RDF
-el	undef	RD_RDF
-reto	undef	RD_RDF
-de	undef	PSP
-acondicionamiento	undef	RD_RDF
-f	undef	RD_RDF
-?	univ	RD_PUNC
-
-sico	undef	N_NNP
-y	undef	RB_AMN
-aument	undef	N_NN
-?	univ	RD_PUNC
-
-mi	undef	DT
-puntuaci	undef	N_NN
-?	univ	RD_PUNC
-n	undef	CC
-Fuel	en	N_NNP
-Print	en	N_NN
-en	undef	PSP
-atletismo	undef	N_NN
-.	univ	RD_PUNC
-
-Obtener	undef	N_NNP
-m	undef	N_NNP
-?	univ	RD_PUNC
-
-s	undef	RD_RDF
-informaci	undef	N_NN
-?	univ	RD_PUNC
-n	undef	CC
-acerca	undef	N_NNP
-de	undef	N_NNP
-Fuel	en	N_NNP
-Print	en	N_NN
-.	univ	RD_PUNC
 
 
 subha	bn	N_NNP

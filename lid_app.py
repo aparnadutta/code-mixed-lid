@@ -47,7 +47,7 @@ def make_conf_chart(data_output: dict):
 
 def make_rank_chart(data_output: dict, rank: dict[str, list]):
     sent_len = len(data_output['tokens'])
-    tokens = [t for tok_chunk in [[tok] * 6 for tok in data_output['tokens']] for t in tok_chunk]
+    tokens = [t for tok_chunk in [[tok] * 8 for tok in data_output['tokens']] for t in tok_chunk]
     lang_tags = [tag for word in [list(rank.keys()) * sent_len] for tag in word]
     confidence = [word_confs[i] for i in range(sent_len) for lang, word_confs in rank.items()]
     color_pairs = [(lang, val['color']) for lang, val in lang_color_dict.items()]
@@ -68,9 +68,10 @@ def make_rank_chart(data_output: dict, rank: dict[str, list]):
 
 lang_color_dict = {'bn': {'name': 'Bangla', 'color': '#ff8da9'},
                    'en': {'name': 'English', 'color': '#78f6ff'},
-                   'univ': {'name': 'Universal', 'color': '#cf9cff'},
+                   'mixed': {'name': 'Mixed', 'color': '#cf9cff'},
+                   'univ': {'name': 'Universal', 'color': '#70ff77'},
                    'ne': {'name': 'Named Entity', 'color': '#ffdd69'},
-                   'acro': {'name': 'Acronym', 'color': '#c0ff6f'}}
+                   'acro': {'name': 'Acronym', 'color': '#dbff70'}}
 
 LID = LanguageIdentifier(Path("trained_models/trained_LID_model.pth"))
 

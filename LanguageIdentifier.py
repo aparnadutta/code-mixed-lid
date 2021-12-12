@@ -10,7 +10,7 @@ class LanguageIdentifier:
     def __init__(self, directory_path: Path):
         model_information_dict = torch.load(directory_path)
         subword_to_idx = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
-        lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5}
+        lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
         self.model = LSTMLIDModel(subword_to_idx, lang_to_idx,
                                   model_information_dict['embedding_dim'], model_information_dict['hidden_dim'],
                                   model_information_dict['layers'])

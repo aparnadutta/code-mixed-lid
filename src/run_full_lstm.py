@@ -40,8 +40,8 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     run_training(lstm_model, training_params, to_train)
 
 
-PRETRAINED_MODEL = './trained_models/trained_LID_modelE33.pth'
-# PRETRAINED_MODEL = None
+# PRETRAINED_MODEL = './trained_models/trained_LID_modelE33.pth'
+PRETRAINED_MODEL = None
 
 EPOCHS = 34
 SEED = 42

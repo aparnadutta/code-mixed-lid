@@ -34,9 +34,15 @@ def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Po
     random.shuffle(all_data)
     train, dev, test = [], [], []
 
-    ten_perc = int(len(all_data) * 0.1)
-    train_end = ten_perc * 8
-    test_end = train_end + ten_perc
+    # 60:20:20 split
+    twenty_perc = int(len(all_data) * 0.2)
+    train_end = twenty_perc * 3
+    test_end = train_end + twenty_perc
+
+    # 8:1:1 split
+    # ten_perc = int(len(all_data) * 0.1)
+    # train_end = ten_perc * 8
+    # test_end = train_end + ten_perc
 
     train.extend(all_data[: train_end])
     test.extend(all_data[train_end: test_end])

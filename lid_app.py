@@ -67,6 +67,7 @@ def make_rank_chart(data_output: dict, rank: dict[str, list]):
 
 
 lang_color_dict = {'bn': {'name': 'Bangla', 'color': '#ff8da9'},
+                   # 'hi': {'name': 'Hindi', 'color': '#FF0000'},
                    'en': {'name': 'English', 'color': '#78f6ff'},
                    'mixed': {'name': 'Mixed', 'color': '#cf9cff'},
                    'univ': {'name': 'Universal', 'color': '#70ff77'},

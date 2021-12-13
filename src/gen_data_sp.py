@@ -1,6 +1,8 @@
 import random
 from collections import Counter
 
+import numpy as np
+
 from language_dataset import load_posts, write_prep_data, gen_sentpiece_model, Post, load_file
 
 
@@ -34,11 +36,11 @@ def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Po
 
     ten_perc = int(len(all_data) * 0.1)
     train_end = ten_perc * 8
-    dev_end = train_end + ten_perc
+    test_end = train_end + ten_perc
 
     train.extend(all_data[: train_end])
-    test.extend(all_data[train_end: dev_end])
-    dev.extend(all_data[dev_end:])
+    test.extend(all_data[train_end: test_end])
+    dev.extend(all_data[test_end:])
 
     write_prep_data(dirpath, (train, dev, test))
     return train, dev, test

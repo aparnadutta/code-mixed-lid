@@ -8,8 +8,11 @@ from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
-# VOCAB_SIZE = 5059
 VOCAB_SIZE = 5500
+
+
+# VOCAB_SIZE = 4200
+# VOCAB_SIZE = 5780
 
 
 class Post:
@@ -42,15 +45,16 @@ def load_posts(filepath: Optional[str]) -> list[Post]:
                 line = line.rstrip()
                 if len(line) == 0:
                     if len(words) != 0:
-                        lang_set = set(langs)
                         # only add posts that contain either Bengali or English
                         # # (not if all tokens are undef, hi, univ, etc)
+                        lang_set = set(langs)
                         if 'bn' in lang_set or 'en' in lang_set:
                             all_data.append(Post(words, langs))
                         words, langs = [], []
                 else:
                     word, lang, _ = line.split('\t')
-                    lang = 'mixed' if '+' in lang else lang
+                    if '+' in lang:
+                        lang = 'mixed'
                     # if "http" not in word and "@" not in word and lang != 'undef':
                     words.append(word)
                     langs.append(lang)
@@ -117,8 +121,8 @@ class LIDDataset(Dataset):
         self.data: list[Post] = dataset
         self.sp_model = load_sp_model('./spm_user.model')
         self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
-        self.lang_to_idx: dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
-
+        self.lang_to_idx: dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2,
+                                            'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
         self.weight_dict = self.make_weight_dict()
 
     def make_weight_dict(self) -> dict:

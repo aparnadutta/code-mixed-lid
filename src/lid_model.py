@@ -148,7 +148,7 @@ class LIDModel(nn.Module):
             print(f"\nAverage total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)
-            if accuracy > 0.93:
+            if accuracy > 0.92:
                 self.save_model("E" + str(epoch))
             print("Time spent in epoch {0}: {1:.2f} ".format(epoch + 1, time.time() - epoch_start_time))
 

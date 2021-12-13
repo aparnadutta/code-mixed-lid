@@ -24,10 +24,10 @@ def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: Callab
 
 
 def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
-
     training_params = optimizer, weight_decay, lr, batch_size, epochs
     numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
-    lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
+    lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2,
+                   'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
 
     lstm_model = load_LSTM_model(pretrained_model_path=pretrained_model,
                                  subword_to_idx=numericalizer,
@@ -40,10 +40,10 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     run_training(lstm_model, training_params, to_train)
 
 
-PRETRAINED_MODEL = './trained_models/trained_LID_model.pth'
+PRETRAINED_MODEL = './trained_models/trained_LID_modelE33.pth'
 # PRETRAINED_MODEL = None
 
-EPOCHS = 33
+EPOCHS = 34
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300

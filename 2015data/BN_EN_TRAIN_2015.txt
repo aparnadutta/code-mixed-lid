@@ -10206,7 +10206,7 @@ love	en	V_VM
 u	en	PR_PRP
 like	en	PSP
 hell	en	N_NN
-jute	acro+bn_suffix	N_NN
+jute	bn	N_NN
 atodn	bn	RD_RDF
 2	univ	$
 ato	bn	JJ
@@ -10288,7 +10288,7 @@ one	en	$
 of	en	PSP
 the	en	DT
 awesome	en	JJ
-calibrewala	en+bn_suffix	N_NN
+calibrewala	ne+bn_suffix	N_NN
 people	en	N_NN
 kintu	bn	CC
 koekta	bn	JJ
@@ -11547,7 +11547,6 @@ are	en	V_VM
 the	en	DT
 hottest	en	JJ
 JU	acro	N_NNP
-ETCEian	acro+en_suffix	N_NNP
 of	en	PSP
 the	en	DT
 decade	en	N_NN
@@ -19802,7 +19801,7 @@ seta	bn	N_NN
 teo	bn	PR_PRP
 apotti	bn	N_NN
 thakle	bn	V_VM
-JU	acro+en_suffix	N_NNP
+JU	acro	N_NNP
 Matrimonial	en	N_NNP
 V	en	N_NNP
 2.0	univ	$
@@ -22708,11 +22707,6 @@ my	en	DT
 heart	en	N_NN
 away	en	RB_AMN
 ...........	univ	RD_PUNC
-
-#female	univ	#
-#not	univ	#
-a	en	DT
-JUian	acro+en_suffix	N_NNP
 
 
 though	en	PSP

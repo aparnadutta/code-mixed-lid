@@ -4,9 +4,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
-from src.language_dataset import BatchSampler, VOCAB_SIZE, PyTorchLIDDataSet
+from src.datasets import BatchSampler, PyTorchLIDDataSet
+from load_data_sentencepiece import VOCAB_SIZE
 
 
+# TODO should i be softmaxing here?
 def correct_predictions(scores, masks, labels):
     pred = torch.argmax(scores, dim=1)
     masked_pred = torch.masked_select(pred, masks)

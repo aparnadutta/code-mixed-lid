@@ -4,14 +4,16 @@ from collections import Counter
 from typing import Optional, Callable
 
 import torch
+import re
 from torch.utils.data import Sampler, Dataset
 from torchtext.data.functional import generate_sp_model, load_sp_model, sentencepiece_numericalizer
 from random import shuffle
 
-VOCAB_SIZE = 5500
+# VOCAB_SIZE = 5500
+# VOCAB_SIZE = 4600
+VOCAB_SIZE = 4200
 
 
-# VOCAB_SIZE = 4200
 # VOCAB_SIZE = 5780
 
 
@@ -45,17 +47,13 @@ def load_posts(filepath: Optional[str]) -> list[Post]:
                 line = line.rstrip()
                 if len(line) == 0:
                     if len(words) != 0:
-                        # only add posts that contain either Bengali or English
-                        # # (not if all tokens are undef, hi, univ, etc)
-                        lang_set = set(langs)
-                        if 'bn' in lang_set or 'en' in lang_set:
-                            all_data.append(Post(words, langs))
+                        all_data.append(Post(words, langs))
                         words, langs = [], []
                 else:
                     word, lang, _ = line.split('\t')
                     if '+' in lang:
                         lang = 'mixed'
-                    # if "http" not in word and "@" not in word and lang != 'undef':
+                    word = re.sub(r'(.)\1{2,}', r"\1", word.lower())
                     words.append(word)
                     langs.append(lang)
     return all_data

@@ -3,31 +3,43 @@ from typing import Optional, Callable
 
 import torch
 from torchtext.data import sentencepiece_numericalizer, load_sp_model
-
 from run_language_identifier import run_training
 from lstm_model import LSTMLIDModel
 
 
-def load_LSTM_model(pretrained_model_path: Optional[str], subword_to_idx: Callable, lang_to_idx: dict,
-                    hidden_dim, embedding_dim, num_lstm_layers):
+def load_LSTM_model(pretrained_model_path: Optional[str],
+                    subword_to_idx: Callable,
+                    lang_to_idx: dict,
+                    hidden_dim,
+                    embedding_dim,
+                    num_lstm_layers):
     if pretrained_model_path is not None:
         model_dict = torch.load(pretrained_model_path)
-        LSTM_model = LSTMLIDModel(subword_to_idx=subword_to_idx, lang_to_idx=lang_to_idx,
-                                  hidden_dim=model_dict['hidden_dim'], embedding_dim=model_dict['embedding_dim'],
+        lstm_model = LSTMLIDModel(subword_to_idx=subword_to_idx,
+                                  lang_to_idx=lang_to_idx,
+                                  hidden_dim=model_dict['hidden_dim'],
+                                  embedding_dim=model_dict['embedding_dim'],
                                   layers=model_dict['layers'])
-        LSTM_model.load_state_dict(model_dict['model_state_dict'])
+        lstm_model.load_state_dict(model_dict['model_state_dict'])
 
     else:
-        LSTM_model = LSTMLIDModel(subword_to_idx=subword_to_idx, lang_to_idx=lang_to_idx,
-                                  hidden_dim=hidden_dim, embedding_dim=embedding_dim, layers=num_lstm_layers)
-    return LSTM_model
+        lstm_model = LSTMLIDModel(subword_to_idx=subword_to_idx,
+                                  lang_to_idx=lang_to_idx,
+                                  hidden_dim=hidden_dim,
+                                  embedding_dim=embedding_dim,
+                                  layers=num_lstm_layers)
+    return lstm_model
 
 
-def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
+def main(pretrained_model,
+         epochs,
+         weight_decay,
+         batch_size,
+         lr,
+         optimizer):
     training_params = optimizer, weight_decay, lr, batch_size, epochs
     numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
-    lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2,
-                   'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
+    lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
 
     lstm_model = load_LSTM_model(pretrained_model_path=pretrained_model,
                                  subword_to_idx=numericalizer,
@@ -40,10 +52,9 @@ def main(pretrained_model, epochs, weight_decay, batch_size, lr, optimizer):
     run_training(lstm_model, training_params, to_train)
 
 
-# PRETRAINED_MODEL = './trained_models/trained_LID_modelE33.pth'
+# PRETRAINED_MODEL = './trained_models/trained_LID_modelE39.pth'
 PRETRAINED_MODEL = None
-
-EPOCHS = 34
+EPOCHS = 40
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300
@@ -60,8 +71,8 @@ if __name__ == "__main__":
           f'EMBEDDING_DIM = {EMBEDDING_DIM}\n'
           f'NUM_LSTM_LAYERS = {NUM_LSTM_LAYERS}\n'
           f'OPTIMIZER = {OPTIMIZER}\n'
-          f'LR = {LR}\n'
-          f'WEIGHT_DECAY = {WEIGHT_DECAY}\n'
+          # f'LR = {LR}\n'
+          # f'WEIGHT_DECAY = {WEIGHT_DECAY}\n'
           f'BATCH_SIZE = {BATCH_SIZE}')
     main(pretrained_model=PRETRAINED_MODEL,
          epochs=EPOCHS,

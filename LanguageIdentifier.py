@@ -1,4 +1,4 @@
-from torchtext.data import sentencepiece_numericalizer, load_sp_model
+from torchtext.data import sentencepiece_numericalizer, load_sp_model, sentencepiece_tokenizer
 
 from src.lstm_model import LSTMLIDModel
 from nltk import TreebankWordTokenizer
@@ -27,16 +27,17 @@ class LanguageIdentifier:
         return self.model.rank(self.tokenize(input_sentence))
 
 
-LID = LanguageIdentifier(Path("trained_models/trained_LID_model.pth"))
+LID = LanguageIdentifier(Path("trained_models/trained_LID_modelAPP.pth"))
 
-sent = 'Kakuli Bhattachajeer shaathey dekha kortey jachhi... thesis er kichu topic chhilona discuss kortey ..'
+tokeni = sentencepiece_tokenizer(load_sp_model('./spm_user.model'))
+sent = 'Aashol e villain chara story new twist nebe ki kore'
 
 text, preds = LID.predict(sent)
 
 ranking = LID.rank(sent)
 
-# for pred in preds.items():
-#     print(pred)
-#
+for pred in preds.items():
+    print(pred)
+
 # for r in ranking.items():
 #     print(r)

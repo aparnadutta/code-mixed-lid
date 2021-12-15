@@ -12714,13 +12714,6 @@ e	bn	DM_DMD
 nam	bn	N_NN
 jibon	bn	V_VM
 
-
-Tout	hi	N_NNP
-va	hi	CC
-mal	hi	N_NNP
-...	univ	RD_PUNC
-
-
 jodi	bn	N_NNP
 bola	bn	N_NNP
 jeto	bn	N_NNP

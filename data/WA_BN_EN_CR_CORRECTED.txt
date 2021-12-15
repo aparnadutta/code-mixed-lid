@@ -3662,14 +3662,14 @@ thik	bn	G_N
 kore	bn	G_N
 ...	univ	G_X
 
-dada	bn	G_N
+dada	ne	G_N
 ,	univ	G_X
 amar	bn	G_X
 ek	bn	G_N
 bondhu	bn	G_N
-anindita	bn	G_N
-bhattacharya	bn	G_N
-diganta	bn	G_J
+anindita	ne	G_N
+bhattacharya	ne	G_N
+diganta	ne	G_J
 r	bn	G_X
 sathe	bn	G_N
 contact	en	G_V
@@ -3698,7 +3698,7 @@ ni	bn	G_PRT
 but	en	CC
 jigges	en	G_N
 korlo	bn	G_N
-diganta	bn	G_N
+diganta	ne	G_N
 ke	bn	G_PRP
 directly	en	G_R
 contact	en	G_V
@@ -3721,7 +3721,7 @@ kintu	bn	CC
 unake	bn	G_PRP
 ki	bn	G_PRP
 ligbe	bn	G_V
-diganta	bn	G_N
+diganta	ne	G_N
 ?	univ	G_X
 ki	bn	G_PRP
 bhabe	bn	G_N
@@ -3729,9 +3729,9 @@ approach	en	G_V
 korbe	bn	G_N
 ?	univ	G_X
 
-dada	bn	G_N
+dada	ne	G_N
 ,	univ	G_X
-diganta	bn	G_J
+diganta	ne	G_J
 er	bn	G_PRP
 kono	univ	G_PRP
 update	en	G_N
@@ -3759,7 +3759,7 @@ korchhi	bn	G_N
 ..	univ	G_X
 khub	bn	G_SYM
 siggiri	bn	G_N
-diganta	bn	G_N
+diganta	ne	G_N
 te	bn	PSP
 mail	en	G_N
 korbo	bn	G_N
@@ -3771,7 +3771,7 @@ na	bn	G_N
 amra	bn	G_N
 achi	bn	G_J
 ,	bn	G_X
-diganter	bn	G_N
+diganter	ne+bn_suffix	G_N
 jono	bn	G_N
 worried	en	G_V
 .	univ	G_X
@@ -3793,7 +3793,7 @@ ektu	bn	G_SYM
 ..	univ	G_X
 amar	bn	G_X
 ek	bn	G_X
-dada	bn	G_N
+dada	ne	G_N
 esechhilo	bn	G_V
 holidays	en	G_N
 e	bn	G_PRP

@@ -9,13 +9,9 @@ from src.language_dataset import BatchSampler, VOCAB_SIZE, PyTorchLIDDataSet
 
 def correct_predictions(scores, masks, labels):
     pred = torch.argmax(scores, dim=1)
-
     masked_pred = torch.masked_select(pred, masks)
     masked_labels = torch.masked_select(labels, masks)
-
-    num_corr = masked_pred == masked_labels
-    num_corr = num_corr.sum()
-    return num_corr
+    return (masked_pred == masked_labels).sum()
 
 
 class LIDModel(nn.Module):
@@ -73,7 +69,7 @@ class LIDModel(nn.Module):
         self.eval()
         prep_sent, mask = self.prepare_sequence(sentence)
         feats = self(prep_sent).transpose(1, 2)  # shape (batch_size, seq_len, num_labels)
-        feats_smax = F.softmax(feats, dim=-1).squeeze()  # log-softmaxing over each word
+        feats_smax = F.softmax(feats, dim=-1).squeeze()  # softmaxing over each word
         feats_smax = feats_smax.unsqueeze(0) if len(list(feats_smax.size())) < 2 else feats_smax
 
         arr = {lang: [] for lang in self.lang_to_idx.keys()}
@@ -87,7 +83,11 @@ class LIDModel(nn.Module):
     def fit(self, train_dataset: PyTorchLIDDataSet, dev_dataset: PyTorchLIDDataSet,
             optimizer, epochs=3, batch_size=64, weight_dict=None):
         test_sampler = BatchSampler(batch_size, dev_dataset)
-        dataloader_dev = DataLoader(dev_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=test_sampler)
+        dataloader_dev = DataLoader(dev_dataset,
+                                    shuffle=False,
+                                    drop_last=False,
+                                    collate_fn=self.pad_collate,
+                                    sampler=test_sampler)
 
         weights = None
         if weight_dict is not None:
@@ -107,14 +107,17 @@ class LIDModel(nn.Module):
             epoch_start_time = time.time()
 
             sampler = BatchSampler(batch_size, train_dataset)
-            dataloader_train = DataLoader(train_dataset, shuffle=False, drop_last=False, collate_fn=self.pad_collate, sampler=sampler)
+            dataloader_train = DataLoader(train_dataset,
+                                          shuffle=False,
+                                          drop_last=False,
+                                          collate_fn=self.pad_collate,
+                                          sampler=sampler)
 
             # Logit is the pre-softmax scores
             for idx, batch in enumerate(tqdm(dataloader_train, leave=False)):
                 optimizer.zero_grad()
                 tensor_sentences, masks, labels = batch
                 logit = self(tensor_sentences)
-
                 loss_nll = loss_train(logit, labels)
                 num_correct_preds += correct_predictions(logit, masks, labels)
                 loss = loss_nll
@@ -127,7 +130,7 @@ class LIDModel(nn.Module):
             accuracy = (num_correct_preds / train_num_tokens).item()
 
             print(f"\nAverage training error in epoch {epoch + 1}: {avg_total_loss:.5f} "
-                      f"and training accuracy: {accuracy:.4f}")
+                  f"and training accuracy: {accuracy:.4f}")
             step_num = epoch
             print("Training Accuracy:", accuracy, step_num)
             print("Training Loss:", avg_total_loss, step_num)

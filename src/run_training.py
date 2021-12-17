@@ -36,7 +36,8 @@ def main(pretrained_model,
          weight_decay,
          batch_size,
          lr,
-         optimizer):
+         optimizer,
+         eval_on_test=False):
     training_params = optimizer, weight_decay, lr, batch_size, epochs
     numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
     lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
@@ -49,13 +50,13 @@ def main(pretrained_model,
                                  num_lstm_layers=NUM_LSTM_LAYERS)
     to_train = pretrained_model is None
 
-    run_training(lstm_model, training_params, to_train)
+    run_training(lstm_model, training_params, to_train, eval_on_test)
 
 
-PRETRAINED_MODEL = './trained_models/trained_LID_modelE34.pth'
+PRETRAINED_MODEL = './scratch_models/trained_LID_model.pth'
 # PRETRAINED_MODEL = None
 
-EPOCHS = 40
+EPOCHS = 30
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300
@@ -64,6 +65,8 @@ OPTIMIZER = 'adam'
 LR = 0.1
 WEIGHT_DECAY = 0.00001
 BATCH_SIZE = 64
+EVAL_ON_TEST = False
+
 
 if __name__ == "__main__":
     print(f'PRETRAINED_MODEL = {PRETRAINED_MODEL}\n'
@@ -80,4 +83,5 @@ if __name__ == "__main__":
          weight_decay=WEIGHT_DECAY,
          batch_size=BATCH_SIZE,
          lr=LR,
-         optimizer=OPTIMIZER)
+         optimizer=OPTIMIZER,
+         eval_on_test=EVAL_ON_TEST)

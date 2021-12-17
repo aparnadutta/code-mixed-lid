@@ -5,7 +5,7 @@ import numpy as np
 from torchtext.data import generate_sp_model
 import re
 
-from datasets import Post
+from src.datasets import Post
 
 
 def load_raw_posts(filepath: Optional[str]) -> list[Post]:

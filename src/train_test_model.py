@@ -5,56 +5,67 @@ import numpy as np
 from tqdm import tqdm
 
 from lid_model import LIDModel
-from datasets import LIDDataset, PyTorchLIDDataSet
+from datasets import LIDDataset, PyTorchLIDDataSet, Post
 from data_loading import get_train_dev_test
 from typing import Optional
 
 
-def test_model(data_set, model: LIDModel):
+def test_model(data_set, model: LIDModel) -> tuple[list[Post], np.ndarray]:
     model.eval()
     lang_to_idx = model.lang_to_idx
     data_loader = DataLoader(data_set, batch_size=1)
-    # 177 is the max number of words in a post
-    pred_prob = np.full((len(data_set), 177, 2), -1)
+
+    conf_mat = np.zeros((len(lang_to_idx), len(lang_to_idx)))
+    all_tagged_sents = []
 
     for i, item in enumerate(tqdm(data_loader, leave=False)):
-        words, langs = item
-        words = [w[0] for w in words]
-        true_labels = [lang[0] for lang in langs]
-        preds = model.predict(words)['predictions']
-        for word_idx in range(len(words)):
-            pred_prob[i, word_idx, 0] = lang_to_idx[preds[word_idx]]
-            pred_prob[i, word_idx, 1] = lang_to_idx[true_labels[word_idx]]
-    get_stats(lang_to_idx, pred_prob)
-    return pred_prob
+        tokens, langs = item
+        tokens = [w[0] for w in tokens]
+        gold_labels = [lang[0] for lang in langs]
+
+        pred_posts = model.predict(tokens)
+        pred_labels = pred_posts.langs
+
+        all_tagged_sents.append(pred_posts)
+
+        for pred, gold in zip(pred_labels, gold_labels):
+            conf_mat[lang_to_idx[pred]][lang_to_idx[gold]] += 1
+
+    return all_tagged_sents, conf_mat
 
 
-def get_stats(lang_to_idx, all_preds: np.ndarray):
-    conf_mat = np.zeros((len(lang_to_idx), len(lang_to_idx)))
-    for i in range(len(all_preds)):
-        for pred, gold in all_preds[i]:
-            if pred >= 0:
-                conf_mat[pred][gold] += 1
-
+def save_metrics(conf_mat, lang_labels):
+    """Saves metrics as a .txt file
+    Arguments:
+        conf_mat  -- confusion matrix across dataset
+        lang_labels -- list of language labels corresponding with confusion matrix heading
+    """
     accuracy = conf_mat.trace() / np.sum(conf_mat)
     precision = np.diag(conf_mat) / np.sum(conf_mat, axis=1)
     recall = np.diag(conf_mat) / np.sum(conf_mat, axis=0)
     f1 = (2 * precision * recall) / (precision + recall)
-    print()
-    print("\naccuracy:\t", "\t".join(["{:.4%}".format(accuracy)]))
-    print("\t" + "\t".join(list(lang_to_idx.keys())))
-    print("precision:\t", "\t".join(["{:.4%}".format(prec) for prec in precision.tolist()]))
-    print("recall:\t", "\t".join(["{:.4%}".format(rec) for rec in recall.tolist()]))
-    print("f1:\t", "\t".join(["{:.4%}".format(f) for f in f1.tolist()]))
+
+    fname = "./eval_output/test_metrics.txt"
+    with open(fname, 'w') as f:
+        f.write("\nAccuracy:\t" + "\t".join(["{:.4%}".format(accuracy)]))
+        f.write("\nLabels:\t" + "\t".join(lang_labels))
+        f.write("\nPrecision:\t" + "\t".join(["{:.4%}".format(prec) for prec in precision.tolist()]))
+        f.write("\nRecall:\t" + "\t".join(["{:.4%}".format(rec) for rec in recall.tolist()]))
+        f.write("\nF1:\t" + "\t".join(["{:.4%}".format(f) for f in f1.tolist()]))
+        f.close()
 
 
-def save_probs(pred_prob, file_ending=""):
-    """Saves probabilities as a .npy file and adds it as artifact
+def save_preds(predictions: list[Post]):
+    """Saves predictions as a .txt file
     Arguments:
-        pred_prob  -- list or numpy array to save as .npy file
+        preds  -- list of tagged sentences to save
     """
-    fname = "./prediction_probabilities" + file_ending + ".npy"
-    np.save(fname, pred_prob)
+    fname = "./eval_output/test_predictions.txt"
+    with open(fname, 'w') as f:
+        for post in predictions:
+            tagged = ['/'.join((word, tag)) for word, tag in zip(post.words, post.langs)]
+            f.write(" ".join(tagged) + "\n")
+        f.close()
 
 
 def train_model(data_set: PyTorchLIDDataSet, test_dataset: PyTorchLIDDataSet, lidmodel: 'LIDModel',
@@ -67,7 +78,7 @@ def train_model(data_set: PyTorchLIDDataSet, test_dataset: PyTorchLIDDataSet, li
     lidmodel.fit(data_set, test_dataset, opti, epochs=epochs, weight_dict=weight_dict, batch_size=batch_size)
 
 
-def run_training(model, training_params, to_train=True):
+def run_training(model, training_params, to_train=True, eval_on_test=False):
 
     train, dev, test = get_train_dev_test('./prepped_data/')
 
@@ -86,10 +97,12 @@ def run_training(model, training_params, to_train=True):
                     training_params=training_params, weight_dict=weight_dict)
 
     print("Testing model")
-    eval_data = test_model(data_set=test_dataset, model=model)
+    dataset_for_eval = test_dataset if eval_on_test else dev_dataset
+    predictions, confusion_mat = test_model(data_set=dataset_for_eval, model=model)
 
     print("Saving model")
     model.save_model()
 
     print("Saving predictions")
-    save_probs(eval_data)
+    save_preds(predictions)
+    save_metrics(confusion_mat, list(dataset_for_eval.lang_to_idx.keys()))

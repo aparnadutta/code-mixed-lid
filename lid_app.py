@@ -8,9 +8,7 @@ from colour import Color
 import random
 
 
-def color_text(output: dict):
-    tokens = output['tokens']
-    preds = output['predictions']
+def color_label_tokens(tokens: list[str], preds: list[str]):
     return [(tok, pred, lang_color_dict[pred]['color']) for tok, pred in zip(tokens, preds)]
 
 
@@ -45,9 +43,9 @@ def make_conf_chart(data_output: dict):
     return chart
 
 
-def make_rank_chart(data_output: dict, rank: dict[str, list]):
-    sent_len = len(data_output['tokens'])
-    tokens = [t for tok_chunk in [[tok] * 8 for tok in data_output['tokens']] for t in tok_chunk]
+def make_rank_chart(tokens: list[str], rank: dict[str, list]):
+    sent_len = len(tokens)
+    tokens = [t for tok_chunk in [[tok] * 8 for tok in tokens] for t in tok_chunk]
     lang_tags = [tag for word in [list(rank.keys()) * sent_len] for tag in word]
     confidence = [word_confs[i] for i in range(sent_len) for lang, word_confs in rank.items()]
     color_pairs = [(lang, val['color']) for lang, val in lang_color_dict.items()]
@@ -105,15 +103,14 @@ def write_web_app():
         submit_button = form.form_submit_button(label='Submit')
 
     if submit_button:
-        text, output = LID.predict(sentence)
+        post = LID.predict(sentence)
         rank = LID.rank(sentence)
 
         st.subheader('Predicted Labels')
-        annotated_text(*color_text(output))
-        # st.text("")
+        annotated_text(*color_label_tokens(post.words, post.langs))
         st.subheader('Word-level Model Confidence')
         # st.altair_chart(make_conf_chart(output))
-        st.altair_chart(make_rank_chart(output, rank))
+        st.altair_chart(make_rank_chart(post.words, rank))
 
 
 if __name__ == '__main__':

@@ -77,9 +77,10 @@ def load_prepped_file(filepath: str) -> list[Post]:
     return data
 
 
-def gen_sentpiece_model(train_filepath: str = './prepped_data/train.txt',
-                        output_filepath: str = './sp_source_data.txt',
-                        model_type: str = 'unigram'):
+def gen_sentpiece_model(vocab_size,
+                        model_type: str = 'unigram',
+                        train_filepath: str = './prepped_data/train.txt',
+                        output_filepath: str = './sp_source_data.txt'):
     """
     Uses training data to generate sentencepiece source data. Creates sentencepiece model of provided
     vocab size and returns the sentencepiece model
@@ -89,30 +90,22 @@ def gen_sentpiece_model(train_filepath: str = './prepped_data/train.txt',
     with open(output_filepath, 'w') as f:
         for post in train_data:
             f.write(' '.join(post.words) + '\n')
-    generate_sp_model(output_filepath, vocab_size=VOCAB_SIZE, model_prefix='./spm_user', model_type=model_type)
+    generate_sp_model(output_filepath, vocab_size=vocab_size, model_prefix='./spm_user', model_type=model_type)
 
 
-def load_raw_data() -> list[Post]:
-    data_2015 = load_raw_posts('./2015data/BN_EN_TRAIN_2015.txt')
-    fb = load_raw_posts('./data/FB_BN_EN_CR.txt')
-    twit = load_raw_posts('./data/TWT_BN_EN_CR.txt')
-    whats = load_raw_posts('./data/WA_BN_EN_CR_CORRECTED.txt')
-    return data_2015 + fb + twit + whats
+# todo fix this not working
+def print_stats(filepaths: list[str]) -> None:
+    langs = ['bn', 'en', 'univ', 'ne', 'hi', 'acro', 'mixed', 'undef']
 
-
-def print_stats(all_data: list[Post]) -> None:
-    num_tokens = sum([len(post.words) for post in all_data])
-    inst_lens = [len(post.words) for post in all_data]
-    lang_counts = Counter()
-    for post in all_data:
-        lang_counts.update(post.langs)
-    print("num instances:", len(all_data))
-    print("num tokens:", num_tokens)
-    print("lang counts:", lang_counts)
-    for lang, count in lang_counts.items():
-        print(lang, "{:.2%}".format(count / num_tokens))
-    print("max num words in post:", np.max(inst_lens))
-    print("average num words in post:", np.mean(inst_lens))
+    for f in filepaths:
+        dataset: list[Post] = load_raw_posts(f)
+        filename = f.rsplit('/', 1)[-1]
+        lang_counts = Counter(lang for post in dataset for lang in post)
+        num_tokens = sum([len(post) for post in dataset])
+        num_utts = str(len(dataset))
+        lang_percs = "\t".join(["{:.2%}".format(lang_counts[lang] / num_tokens) for lang in langs])
+        print(filename + '\t\t' + str(num_tokens) + num_utts + lang_percs)
+        print()
 
 
 def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:
@@ -130,40 +123,58 @@ def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Po
     return train, dev, test
 
 
-def compute_cmi(dataset: list[Post]) -> tuple[float, float]:
+def print_cmis(filepaths: list[str]) -> None:
+    for f in filepaths:
+        dataset: list[Post] = load_raw_posts(f)
+        filename = f.rsplit('/', 1)[-1]
+        print(filename + '\t\t' + "\t".join(compute_cmi(dataset)))
+
+
+def compute_cmi(dataset: list[Post]):
+    lang_tags = {'bn', 'en', 'hi', 'mixed'}
+    non_lang_tags = {'univ', 'acro', 'ne', 'undef'}
+
     all_cmis = []
+    num_tokens = 0
+
     for post in dataset:
-        lang_counts = Counter(post.langs)
-        max_wi = lang_counts.most_common(1)[0][1]
-        n = len(post.langs)
-        u = sum([count for lang, count in lang_counts.items() if lang in {'univ', 'acro', 'undef'}])
-        if n == u:
+        num_tokens += len(post)
+        lang_counts = Counter(lang for lang in post.langs if lang in lang_tags)
+        non_lang_counts = Counter(tag for tag in post.langs if tag in non_lang_tags)
+
+        if len(lang_counts) == 0:
             cmi = 0
         else:
-            cmi = 100 * (1 - (max_wi / (n - u)))
+            max_wi = lang_counts.most_common(1)[0][1]
+            denom = len(post) - sum(non_lang_counts.values())
+            cmi = 100 * (1 - (max_wi / denom))
         all_cmis.append(cmi)
-    all_cmi = sum(all_cmis) / len(all_cmis)
-    mixed_cmi = sum(all_cmis) / (len(all_cmis) - all_cmis.count(0))
-    print("all cmi:", all_cmi)
-    print("mixed cmi:", mixed_cmi)
-    print("num words:", sum([len(post.words) for post in dataset]))
-    print("num utterances:", len(dataset))
-    print("perc mixed:", (len(all_cmis) - all_cmis.count(0)) / len(all_cmis))
-    return all_cmi, mixed_cmi
+
+    num_tokens = str(num_tokens)
+    num_utts = str(len(dataset))
+    all_cmi = "{:.4}".format(sum(all_cmis) / len(all_cmis))
+    mixed_cmi = "{:.4}".format(sum(all_cmis) / (len(all_cmis) - all_cmis.count(0)))
+    code_mix_perc = "{:.2%}".format((len(all_cmis) - all_cmis.count(0)) / len(all_cmis))
+
+    return num_tokens, num_utts, all_cmi, mixed_cmi, code_mix_perc
 
 
 VOCAB_SIZE = 3000
 
 
 def main():
+    data_sources = ['./data/FB_BN_EN_CR.txt',
+                    './data/TWT_BN_EN_CR.txt',
+                    './data/WA_BN_EN_CR_CORRECTED.txt',
+                    './2015data/BN_EN_TRAIN_2015.txt']
+    print_cmis(data_sources)
+    print_stats(data_sources)
+
+    # data = [load_raw_posts(f) for f in data_sources]
     # data_dir = './prepped_data/'
-    # data = load_raw_data()
-    # compute_cmi(data)
     # split_write_data(data_dir, data)
-    gen_sentpiece_model(model_type='bpe')
+    # gen_sentpiece_model(vocab_size=VOCAB_SIZE, model_type='bpe')
 
 
 if __name__ == "__main__":
     main()
-
-

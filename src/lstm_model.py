@@ -34,5 +34,5 @@ class LSTMLIDModel(LIDModel):
                                       'embedding_dim': self.embedding_dim,
                                       'hidden_dim': self.hidden_dim,
                                       'layers': self.num_layers}
-        fname = "scratch_models/trained_LID_model" + fileending + ".pth"
+        fname = "./trained_models/trained_LID_model" + fileending + ".pth"
         torch.save(required_model_information, fname)

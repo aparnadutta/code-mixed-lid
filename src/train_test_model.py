@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from lid_model import LIDModel
 from datasets import LIDDataset, PyTorchLIDDataSet
-from load_data_sentencepiece import get_train_dev_test
+from data_loading import get_train_dev_test
 from typing import Optional
 
 

@@ -2,10 +2,7 @@ from indictrans import Transliterator
 
 trn = Transliterator(source='eng', target='ben', decode='beamsearch')
 
-# TODO
-#   Experiment with normalize(text)
+ex_bangla_word = 'jugopojogi'
 
-bengali = trn.transform("jugopojogi", k_best=5)
-
-# print(tags)
+bengali = trn.transform(ex_bangla_word, k_best=5)
 

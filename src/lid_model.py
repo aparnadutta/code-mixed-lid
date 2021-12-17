@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 from src.datasets import BatchSampler, PyTorchLIDDataSet
-from load_data_sentencepiece import VOCAB_SIZE
+from data_loading import VOCAB_SIZE
 
 
 # TODO should i be softmaxing here?

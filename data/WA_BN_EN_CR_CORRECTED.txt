@@ -37,7 +37,7 @@ experience	en	G_N
 amar	bn	G_N
 babyr	bn	G_N
 aaj	bn	G_X
-3	acro	$
+3	univ	$
 months	en	G_N
 complete	en	G_N
 holo	bn	G_N
@@ -89,37 +89,37 @@ asche	bn	G_N
 maneka	bn	G_N
 gandhi	ne	G_N
 korche	bn	G_N
-6	acro	$
+6	univ	$
 months	en	G_N
 ml	undef	G_N
 ,	univ	G_X
 i	en	G_PRP
 wish	en	G_V
-1	acro	$
+1	univ	$
 year	en	G_N
 korto	bn	G_N
 ml	undef	G_N
 
 wait	en	G_V
 for	en	PSP
-2	acro	$
+2	univ	$
 more	en	G_J
 years	en	G_N
 ,	univ	G_X
 jokhon	bn	G_N
 ora	bn	G_PRP
 naughty	en	G_N
-hobe	en	G_V
+hobe	bn	G_V
 na	bn	G_PRT
 
 noodles	en	G_N
 ....	univ	G_X
 ki	bn	G_PRP
-exp	bn	G_PRP
+exp	undef	G_PRP
 korli	bn	G_N
 ?	univ	G_X
 
-7	acro	$
+7	univ	$
 month	en	G_N
 maternity	en	G_N
 leave	en	G_N
@@ -328,7 +328,7 @@ lage	bn	PSP
 last	en	G_J
 ta	bn	G_PRT
 ekdum	bn	G_SYM
-jiju	bn	G_N
+jiju	ne	G_N
 r	bn	G_X
 mato	bn	G_PRT
 
@@ -361,9 +361,9 @@ charecter	en	G_N
 lage	bn	PSP
 😜	univ	G_X
 
-jico	bn	G_R
+jico	ne	G_R
 to	bn	PSP
-arunima	bn	G_N
+arunima	ne	G_N
 moton	bn	G_X
 dekhte	bn	G_V
 hocche	bn	G_V
@@ -371,7 +371,7 @@ hocche	bn	G_V
 jico	ne	G_N
 chul	bn	G_N
 ki	bn	G_PRP
-arunima	bn	G_J
+arunima	ne	G_J
 moton	bn	G_N
 curly	en	G_R
 ?	univ	G_X
@@ -379,12 +379,12 @@ curly	en	G_R
 
 oho	bn	G_PRP
 sei	bn	G_PRP
-pg	ne	G_X
+pg	en	G_X
 kolkata	ne	G_N
 te	bn	PSP
 photo	en	G_N
 dekhechilam	bn	G_V
-kakima	bn	G_N
+kakima	ne	G_N
 r	bn	G_X
 
 zico	ne	G_N
@@ -404,7 +404,7 @@ chool	bn	G_N
 
 amar	bn	G_X
 aar	bn	G_X
-chaitali'r	bn	G_N
+chaitali'r	ne	G_N
 common	en	G_J
 ek	bn	G_SYM
 friend	en	G_N
@@ -443,7 +443,7 @@ that	en	DT
 camera	en	G_N
 idea	en	G_N
 was	en	G_V
-arunima's	ne	G_N
+arunima's	ne+en_suffix	G_N
 to	en	PSP
 catch	en	G_N
 chaitali	ne	G_N
@@ -751,7 +751,7 @@ boner	bn	G_N
 biyer	bn	G_N
 date	en	G_V
 bareyeche	bn	G_N
-29th	acro	$
+29th	univ	$
 april	en	G_N
 feb	en	G_N
 mid	en	G_J
@@ -806,10 +806,10 @@ ei	bn	G_PRP
 chele	bn	G_N
 tar	bn	G_SYM
 songe	bn	G_N
-2	acro	$
+2	univ	$
 yrs	en	G_N
 age	en	G_N
-2014	acro	$
+2014	univ	$
 may	en	G_N
 te	bn	PSP
 weeding	en	G_V
@@ -1302,7 +1302,7 @@ raat	bn	G_N
 e	bn	G_N
 ashte	bn	G_N
 ashte	bn	G_N
-9	acro	$
+9	univ	$
 pm	acro	G_N
 earliest	en	G_J
 ...	univ	G_X
@@ -1361,12 +1361,12 @@ chilo	bn	G_V
 
 chumki	bn	G_N
 -	univ	G_X
-twinkle	en	G_N
+twinkle	ne	G_N
 ke	bn	G_PRP
 ki	bn	G_PRP
 niye	bn	PSP
 jabi	bn	G_N
-europe	en	G_V
+europe	ne	G_V
 ?	univ	G_X
 
 aami	bn	G_N
@@ -1518,7 +1518,7 @@ way	en	G_N
 ,	univ	G_X
 but	en	CC
 possible	en	G_J
-noi	en	G_N
+noi	bn	G_N
 ,	univ	G_X
 eto	bn	G_N
 income	en	G_V
@@ -1537,7 +1537,7 @@ at	en	PSP
 least	en	G_J
 maternity	en	G_N
 baariye	bn	G_N
-8	acro	$
+8	univ	$
 months	en	G_N
 koreche	bn	G_V
 ei	bn	G_PRP
@@ -1560,7 +1560,7 @@ bhabchi	bn	G_N
 je	bn	G_N
 until	en	G_N
 .	univ	G_X
-1-2	acro	$
+1-2	univ	$
 yrs	en	G_N
 break	en	G_V
 nie	bn	G_V
@@ -1675,7 +1675,7 @@ aar	bn	G_X
 kichu	bn	G_N
 pawa	bn	G_N
 ,	bn	G_X
-100	acro	$
+100	univ	$
 %	univ	$
 kothaai	bn	G_R
 ache	bn	G_J
@@ -1768,12 +1768,12 @@ hoy	bn	G_V
 bulgaria	ne	G_N
 te	bn	PSP
 maternity	en	G_N
-1	acro	$
+1	univ	$
 year	en	G_N
 er	bn	G_PRP
 
 aader	bn	G_N
-8	acro	$
+8	univ	$
 month	en	G_N
 holo	bn	G_V
 eto	bn	G_SYM
@@ -1796,7 +1796,7 @@ which	en	DT
 was	en	G_V
 only	en	G_R
 for	en	PSP
-3	acro	$
+3	univ	$
 months	en	G_N
 
 yes	en	G_PRT
@@ -1842,7 +1842,7 @@ care	en	G_N
 er	bn	G_PRP
 rekheche	bn	G_V
 daye	bn	G_N
-6	acro	$
+6	univ	$
 months	en	G_N
 e	bn	G_PRP
 
@@ -1935,7 +1935,7 @@ pele	bn	G_V
 ki	bn	G_PRP
 mishti	bn	G_N
 shona	bn	G_N
-twinkle	en	G_N
+twinkle	ne	G_N
 ...	univ	G_X
 ekhon	bn	G_R
 toh	bn	G_N
@@ -1991,7 +1991,7 @@ korar	bn	G_N
 ichhe	bn	G_N
 hoyeche	bn	G_V
 
-twinkle	en	G_N
+twinkle	ne	G_N
 buke	bn	G_N
 ghoshe	bn	G_N
 aar	bn	G_X
@@ -2014,7 +2014,7 @@ hot	en	G_J
 ami	bn	G_N
 bacha	bn	G_N
 boyose	bn	G_N
-twinkle	en	G_J
+twinkle	ne	G_J
 moton	bn	G_N
 chilam	bn	G_N
 ..	univ	G_X
@@ -2046,8 +2046,8 @@ jaay	bn	G_N
 
 zico	ne	G_N
 april	en	G_N
-30th	acro	G_J
-6	acro	$
+30th	univ	G_J
+6	univ	$
 months	en	G_N
 complete	en	G_J
 korbr	bn	G_N
@@ -2060,7 +2060,7 @@ walking	en	G_V
 er	bn	G_PRP
 fun	en	G_N
 ta	bn	G_PRT
-2	acro	$
+2	univ	$
 bosor	bn	G_N
 obdi	bn	G_N
 thakbe	bn	G_V
@@ -2154,7 +2154,7 @@ enjoy	en	G_N
 koreche	bn	G_V
 
 ekhane	bn	G_R
-twinkle	en	G_N
+twinkle	ne	G_N
 is	bn	G_V
 getting	en	G_V
 very	en	G_R
@@ -2184,21 +2184,21 @@ koreche	bn	G_V
 
 nah	bn	G_V
 ,	univ	G_X
-6	acro	$
+6	univ	$
 months	en	G_N
 pore	bn	G_N
 start	en	G_V
 hobe	bn	G_V
 ...	univ	G_X
 annaprashan	bn	G_N
-10th	acro	$
-apr	acro	G_N
+10th	univ	$
+apr	en	G_N
 korbo	bn	G_N
 
 e	bn	G_PRP
 coincidence	en	G_N
 
-twinkle	en	G_N
+twinkle	ne	G_N
 er	bn	G_PRP
 annaprashan	bn	G_N
 o	bn	CC
@@ -2208,7 +2208,7 @@ day	en	G_N
 but	en	CC
 or	bn	CC
 solid	en	G_J
-4	acro	PSP
+4	univ	PSP
 month	en	G_N
 er	bn	G_X
 start	en	G_V
@@ -2229,17 +2229,17 @@ ohhh	en	G_PRT
 or	bn	CC
 per	en	PSP
 month	en	G_N
-500	acro	$
-gm	ne	G_N
+500	univ	$
+gm	en	G_N
 hochhe	bn	G_V
 na	bn	G_PRT
 ?	univ	G_X
 kato	bn	G_SYM
 chilo	bn	G_V
 birth	en	G_N
-wt	acro	G_PRP
+wt	en	G_PRP
 ?	univ	G_X
-2.5	acro	$
+2.5	univ	$
 na	bn	G_V
 ?	univ	G_X
 
@@ -2254,8 +2254,8 @@ pulses	en	G_N
 
 every	en	DT
 month	en	G_N
-500	acro	$
-gm	acro	G_N
+500	univ	$
+gm	en	G_N
 hole	bn	G_V
 toh	bn	G_PRP
 right	en	G_R
@@ -2264,7 +2264,7 @@ gain	en	G_V
 bola	bn	G_N
 hoy	bn	G_V
 ...	univ	G_X
-twinkle	en	G_N
+twinkle	ne	G_N
 r	bn	G_X
 weight	en	G_J
 gain	en	G_V
@@ -2286,7 +2286,7 @@ o	bn	CC
 meye	bn	G_N
 hoyechilo	bn	G_V
 tor	bn	G_PRP
-15	acro	$
+15	univ	$
 days	en	G_N
 aage	bn	G_N
 ,	univ	G_X
@@ -2309,8 +2309,8 @@ but	en	CC
 she	en	G_PRP
 is	en	G_V
 gaining	en	G_V
-500	acro	$
-gm	acro	G_N
+500	univ	$
+gm	en	G_N
 per	en	PSP
 month	en	G_N
 too	en	G_R
@@ -2357,7 +2357,7 @@ breastfeed	en	G_V
 e	bn	G_PRP
 aache	bn	G_N
 
-twinklu	bn	#
+twinklu	ne	#
 toh	bn	G_X
 shetao	bn	G_N
 bondho	bn	G_N
@@ -2472,7 +2472,7 @@ nei	bn	G_V
 
 setao	bn	G_N
 toh	bn	G_X
-twinkle	en	G_N
+twinkle	ne	G_N
 r	bn	G_X
 jonye	bn	G_N
 i	bn	G_PRP
@@ -2502,7 +2502,7 @@ suma	bn	G_N
 amar	bn	G_N
 boner	bn	G_N
 biye	bn	G_N
-29th	acro	G_X
+29th	univ	G_X
 april	en	G_N
 e	bn	G_PRP
 ,	univ	G_X
@@ -2607,7 +2607,7 @@ legeche	bn	G_V
 
 oita	bn	G_N
 strawberry	en	G_N
-hemangioma	undef	G_N
+hemangioma	en	G_N
 ...	univ	G_X
 naam	bn	G_N
 ta	bn	G_PRT
@@ -2666,7 +2666,7 @@ kaaj	bn	G_N
 nah	bn	G_PRT
 !	univ	G_X
 eta	bn	G_SYM
-10-11	acro	$
+10-11	univ	$
 yrs	en	G_N
 e	bn	G_PRP
 fade	en	G_N
@@ -2690,7 +2690,7 @@ emnitei	bn	G_PRP
 bishal	bn	G_N
 kaaj	bn	G_N
 ...	univ	G_X
-7	acro	$
+7	univ	$
 din	bn	G_X
 laglo	bn	G_V
 sob	bn	G_N
@@ -2722,7 +2722,7 @@ tao	bn	G_PRP
 aamar	bn	G_J
 sasuri	bn	G_N
 chilen	bn	G_N
-3	acro	$
+3	univ	$
 mash	bn	G_N
 bole	bn	G_V
 
@@ -3022,10 +3022,10 @@ ta	bn	G_PRT
 peyechhi	bn	G_N
 ..	univ	G_X
 dada	bn	G_N
-2nd	acro	$
+2nd	univ	$
 jachhe	bn	G_N
 r	bn	G_X
-3rd	acro	G_J
+3rd	univ	G_J
 ani	bn	CC
 ra	bn	PSP
 asbe	bn	G_N
@@ -3052,13 +3052,13 @@ parbo	bn	G_N
 na	bn	G_PRT
 bole	bn	G_N
 
-4th	acro	G_J
+4th	univ	G_J
 theke	bn	PSP
 to	bn	PSP
 office	en	G_V
 khulchhe	bn	G_N
 .	univ	G_X
-3rd	acro	$
+3rd	univ	$
 ese	bn	G_V
 ki	bn	G_PRP
 korbe	bn	G_N
@@ -3220,9 +3220,9 @@ jash	en	G_N
 great	en	G_J
 offer	en	G_X
 ...	univ	G_X
-6	acro	$
+6	univ	$
 ta	bn	G_PRT
-7	acro	$
+7	univ	$
 tai	bn	G_SYM
 aste	bn	G_N
 pari	bn	G_N
@@ -3412,7 +3412,7 @@ korchi	bn	G_N
 
 ei	bn	G_PRP
 tora	bn	G_N
-7th	acro	$
+7th	univ	$
 e	bn	G_PRP
 mumbai	ne	G_N
 aachish	bn	G_J
@@ -3624,10 +3624,10 @@ thake	bn	G_V
 ok	ne	G_PRP
 .	univ	G_X
 amra	bn	G_N
-23	acro	$
-jan	bn	G_N
+23	univ	$
+jan	en	G_N
 theke	bn	PSP
-3rd	acro	G_J
+3rd	univ	G_J
 feb	en	G_N
 thakbo	bn	G_V
 na	bn	G_PRT
@@ -3638,7 +3638,7 @@ to	bn	PSP
 attend	en	G_V
 marriage	en	G_N
 of	en	PSP
-sukla's	ne	G_N
+sukla's	ne+en_suffix	G_N
 dadar	bn	G_N
 son	en	G_N
 .	univ	G_X
@@ -3662,20 +3662,20 @@ thik	bn	G_N
 kore	bn	G_N
 ...	univ	G_X
 
-dada	bn	G_N
+dada	ne	G_N
 ,	univ	G_X
 amar	bn	G_X
 ek	bn	G_N
 bondhu	bn	G_N
-anindita	bn	G_N
-bhattacharya	bn	G_N
-diganta	bn	G_J
+anindita	ne	G_N
+bhattacharya	ne	G_N
+diganta	ne	G_J
 r	bn	G_X
 sathe	bn	G_N
 contact	en	G_V
 korbe	bn	G_N
 ...	univ	G_X
-o	acro	CC
+o	bn	CC
 p	acro	G_N
 h.d.	acro	G_N
 kore	bn	G_N
@@ -3698,7 +3698,7 @@ ni	bn	G_PRT
 but	en	CC
 jigges	en	G_N
 korlo	bn	G_N
-diganta	bn	G_N
+diganta	ne	G_N
 ke	bn	G_PRP
 directly	en	G_R
 contact	en	G_V
@@ -3721,7 +3721,7 @@ kintu	bn	CC
 unake	bn	G_PRP
 ki	bn	G_PRP
 ligbe	bn	G_V
-diganta	bn	G_N
+diganta	ne	G_N
 ?	univ	G_X
 ki	bn	G_PRP
 bhabe	bn	G_N
@@ -3729,9 +3729,9 @@ approach	en	G_V
 korbe	bn	G_N
 ?	univ	G_X
 
-dada	bn	G_N
+dada	ne	G_N
 ,	univ	G_X
-diganta	bn	G_J
+diganta	ne	G_J
 er	bn	G_PRP
 kono	univ	G_PRP
 update	en	G_N
@@ -3759,7 +3759,7 @@ korchhi	bn	G_N
 ..	univ	G_X
 khub	bn	G_SYM
 siggiri	bn	G_N
-diganta	bn	G_N
+diganta	ne	G_N
 te	bn	PSP
 mail	en	G_N
 korbo	bn	G_N
@@ -3771,7 +3771,7 @@ na	bn	G_N
 amra	bn	G_N
 achi	bn	G_J
 ,	bn	G_X
-diganter	bn	G_N
+diganter	ne+bn_suffix	G_N
 jono	bn	G_N
 worried	en	G_V
 .	univ	G_X
@@ -3793,7 +3793,7 @@ ektu	bn	G_SYM
 ..	univ	G_X
 amar	bn	G_X
 ek	bn	G_X
-dada	bn	G_N
+dada	ne	G_N
 esechhilo	bn	G_V
 holidays	en	G_N
 e	bn	G_PRP

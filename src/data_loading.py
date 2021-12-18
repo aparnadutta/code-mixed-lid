@@ -1,7 +1,6 @@
 import random
 from collections import Counter
 from typing import Optional
-import numpy as np
 from torchtext.data import generate_sp_model
 import re
 
@@ -93,19 +92,17 @@ def gen_sentpiece_model(vocab_size,
     generate_sp_model(output_filepath, vocab_size=vocab_size, model_prefix='./spm_user', model_type=model_type)
 
 
-# todo fix this not working
 def print_stats(filepaths: list[str]) -> None:
     langs = ['bn', 'en', 'univ', 'ne', 'hi', 'acro', 'mixed', 'undef']
 
     for f in filepaths:
         dataset: list[Post] = load_raw_posts(f)
         filename = f.rsplit('/', 1)[-1]
-        lang_counts = Counter(lang for post in dataset for lang in post)
+        lang_counts = Counter(lang for post in dataset for lang in post.langs)
         num_tokens = sum([len(post) for post in dataset])
         num_utts = str(len(dataset))
         lang_percs = "\t".join(["{:.2%}".format(lang_counts[lang] / num_tokens) for lang in langs])
-        print(filename + '\t\t' + str(num_tokens) + num_utts + lang_percs)
-        print()
+        print(filename + '\t\t' + str(num_tokens) + '\t' + num_utts + '\t' + lang_percs)
 
 
 def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:

@@ -5,9 +5,10 @@ from torchtext.data import generate_sp_model
 import re
 
 from src.datasets import Post
+from pathlib import Path
 
 
-def load_raw_posts(filepath: Optional[str]) -> list[Post]:
+def load_raw_posts(filepath: Optional[Path]) -> list[Post]:
     """
     Reads the raw data from a file and converts it into a list of Post objects.
     This will later be shuffled and written into three separate files for training, development, and testing.
@@ -51,6 +52,7 @@ def write_prep_data(dirpath: str, data: tuple[list[Post], list[Post], list[Post]
     with tokens and language tags split with a backslash
     :return: 3 lists of posts representing the train data, development data, and test data
     """
+
     fnames = [f'{dirpath}train.txt', f'{dirpath}dev.txt', f'{dirpath}test.txt']
     for fname, data_chunk in zip(fnames, data):
         with open(fname, 'w') as file:
@@ -92,17 +94,16 @@ def gen_sentpiece_model(vocab_size,
     generate_sp_model(output_filepath, vocab_size=vocab_size, model_prefix='./spm_user', model_type=model_type)
 
 
-def print_stats(filepaths: list[str]) -> None:
+def print_stats(filepaths: list[Path]) -> None:
     langs = ['bn', 'en', 'univ', 'ne', 'hi', 'acro', 'mixed', 'undef']
 
     for f in filepaths:
         dataset: list[Post] = load_raw_posts(f)
-        filename = f.rsplit('/', 1)[-1]
         lang_counts = Counter(lang for post in dataset for lang in post.langs)
         num_tokens = sum([len(post) for post in dataset])
         num_utts = str(len(dataset))
         lang_percs = "\t".join(["{:.2%}".format(lang_counts[lang] / num_tokens) for lang in langs])
-        print(filename + '\t\t' + str(num_tokens) + '\t' + num_utts + '\t' + lang_percs)
+        print(f'{f.name}\t\t{num_tokens}\t{num_utts}\t{lang_percs}')
 
 
 def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:
@@ -120,11 +121,11 @@ def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Po
     return train, dev, test
 
 
-def print_cmis(filepaths: list[str]) -> None:
+def print_cmis(filepaths: list[Path]) -> None:
     for f in filepaths:
         dataset: list[Post] = load_raw_posts(f)
-        filename = f.rsplit('/', 1)[-1]
-        print(filename + '\t\t' + "\t".join(compute_cmi(dataset)))
+        cmis = "\t".join(compute_cmi(dataset))
+        print(f'{f.name}\t\t{cmis}')
 
 
 def compute_cmi(dataset: list[Post]):
@@ -160,10 +161,8 @@ VOCAB_SIZE = 3000
 
 
 def main():
-    data_sources = ['./data/FB_BN_EN_CR.txt',
-                    './data/TWT_BN_EN_CR.txt',
-                    './data/WA_BN_EN_CR_CORRECTED.txt',
-                    './2015data/BN_EN_TRAIN_2015.txt']
+    data_dir = Path('./data')
+    data_sources = sorted([path for path in data_dir.iterdir()])
     print_cmis(data_sources)
     print_stats(data_sources)
 

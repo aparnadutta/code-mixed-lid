@@ -39,7 +39,7 @@ def main(pretrained_model,
          optimizer,
          eval_on_test=False):
     training_params = optimizer, weight_decay, lr, batch_size, epochs
-    numericalizer = sentencepiece_numericalizer(load_sp_model('./spm_user.model'))
+    numericalizer = sentencepiece_numericalizer(load_sp_model('./sentpiece_resources/spm_user.model'))
     lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
 
     lstm_model = load_LSTM_model(pretrained_model_path=pretrained_model,
@@ -53,10 +53,10 @@ def main(pretrained_model,
     run_training(lstm_model, training_params, to_train, eval_on_test)
 
 
-PRETRAINED_MODEL = './trained_models/trained_LID_modelE32.pth'
+PRETRAINED_MODEL = './trained_models/trained_LID_modelE38.pth'
 # PRETRAINED_MODEL = None
 
-EPOCHS = 35
+EPOCHS = 40
 SEED = 42
 HIDDEN_DIM = 300
 EMBEDDING_DIM = 300

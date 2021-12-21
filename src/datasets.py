@@ -27,7 +27,7 @@ class Post:
 class LIDDataset(Dataset):
     def __init__(self, dataset):
         self.data: list[Post] = dataset
-        self.sp_model = load_sp_model('./spm_user.model')
+        self.sp_model = load_sp_model('./sentpiece_resources/spm_user.model')
         self.subword_to_idx: Callable = sentencepiece_numericalizer(self.sp_model)
         self.lang_to_idx: dict[str, int] = {'bn': 0, 'en': 1, 'univ': 2,
                                             'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}

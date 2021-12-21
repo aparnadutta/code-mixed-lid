@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 from src.datasets import BatchSampler, PyTorchLIDDataSet, Post
+import re
 from src.data_loading import VOCAB_SIZE
 
 
@@ -34,8 +35,9 @@ class LIDModel(nn.Module):
         labels = labels.to(self.device)
         return words, masks, labels
 
-    def prepare_sentence(self, sentence: list[str]) -> tuple[torch.tensor, torch.tensor] :
-        word_id = list(self.subword_to_idx([word.lower() for word in sentence]))
+    def prepare_sentence(self, sentence: list[str]) -> tuple[torch.tensor, torch.tensor]:
+        norm_sent = [re.sub(r'(.)\1{2,}', r"\1\1", word.lower()) for word in sentence]
+        word_id = list(self.subword_to_idx([word for word in norm_sent]))
         mask_nest = [[True] + [False] * (len(word_id[num]) - 1) for num in range(len(word_id))]
 
         word_ids_flat = [w_id for word in word_id for w_id in word]
@@ -59,6 +61,8 @@ class LIDModel(nn.Module):
         preds = torch.argmax(feats_smax, dim=-1)
         masked_preds = torch.masked_select(preds, mask)
         lang_preds = [self.idx_to_lang[pred.item()] for pred in masked_preds]
+
+        # zipped_preds = [(word, lang) for word, lang in zip(sentence, lang_preds)]
 
         self.train()
         return Post(sentence, lang_preds)
@@ -93,6 +97,8 @@ class LIDModel(nn.Module):
             for lang in weight_dict:
                 indx = self.lang_to_idx[lang]
                 weights[indx] = weight_dict[lang]
+
+        best_dev = {'accuracy': 0, 'epoch': 0}
 
         # Index of the dummy label is -1
         loss_train = nn.CrossEntropyLoss(weight=weights, ignore_index=-1)
@@ -149,9 +155,15 @@ class LIDModel(nn.Module):
             print(f"\nAverage total loss dev: {avg_total_loss:.5f}, accuracy: {accuracy:.4f}, ")
             print("Dev Accuracy:", accuracy, step_num)
             print("Dev Loss:", avg_total_loss, step_num)
+
+            if accuracy > best_dev['accuracy']:
+                best_dev['accuracy'] = accuracy
+                best_dev['epoch'] = epoch
             if accuracy > 0.92:
                 self.save_model("E" + str(epoch))
             print("Time spent in epoch {0}: {1:.2f} ".format(epoch + 1, time.time() - epoch_start_time))
+
+        print(f"\nBest dev accuracy: {best_dev['accuracy']} found in EPOCH: {best_dev['epoch']}")
 
     def save_model(self, fileending=""):
         """Saves a pytorch model fully

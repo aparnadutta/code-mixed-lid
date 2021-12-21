@@ -8,7 +8,7 @@ from src.datasets import Post
 from pathlib import Path
 
 
-def load_raw_posts(filepath: Optional[Path]) -> list[Post]:
+def load_raw_post(filepath: Optional[Path]) -> list[Post]:
     """
     Reads the raw data from a file and converts it into a list of Post objects.
     This will later be shuffled and written into three separate files for training, development, and testing.
@@ -29,7 +29,7 @@ def load_raw_posts(filepath: Optional[Path]) -> list[Post]:
                     word, lang, _ = line.split('\t')
                     if '+' in lang:
                         lang = 'mixed'
-                    word = re.sub(r'(.)\1{2,}', r"\1", word.lower())
+                    word = re.sub(r'(.)\1{2,}', r"\1\1", word.lower())
                     words.append(word)
                     langs.append(lang)
     return all_data
@@ -81,7 +81,7 @@ def load_prepped_file(filepath: str) -> list[Post]:
 def gen_sentpiece_model(vocab_size,
                         model_type: str = 'unigram',
                         train_filepath: str = './prepped_data/train.txt',
-                        output_filepath: str = './sp_source_data.txt'):
+                        output_filepath: str = './sentpiece_resources/sp_source_data.txt'):
     """
     Uses training data to generate sentencepiece source data. Creates sentencepiece model of provided
     vocab size and returns the sentencepiece model
@@ -98,7 +98,7 @@ def print_stats(filepaths: list[Path]) -> None:
     langs = ['bn', 'en', 'univ', 'ne', 'hi', 'acro', 'mixed', 'undef']
 
     for f in filepaths:
-        dataset: list[Post] = load_raw_posts(f)
+        dataset: list[Post] = load_raw_post(f)
         lang_counts = Counter(lang for post in dataset for lang in post.langs)
         num_tokens = sum([len(post) for post in dataset])
         num_utts = str(len(dataset))
@@ -106,7 +106,7 @@ def print_stats(filepaths: list[Path]) -> None:
         print(f'{f.name}\t\t{num_tokens}\t{num_utts}\t{lang_percs}')
 
 
-def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:
+def split_write_data(write_path, all_data: list[Post]) -> tuple[list[Post], list[Post], list[Post]]:
     random.shuffle(all_data)
     # 60:20:20 split
     twenty_perc = int(len(all_data) * 0.2)
@@ -117,13 +117,13 @@ def split_write_data(dirpath, all_data: list[Post]) -> tuple[list[Post], list[Po
     test = all_data[train_end: test_end]
     dev = all_data[test_end:]
 
-    write_prep_data(dirpath, (train, dev, test))
+    write_prep_data(write_path, (train, dev, test))
     return train, dev, test
 
 
 def print_cmis(filepaths: list[Path]) -> None:
     for f in filepaths:
-        dataset: list[Post] = load_raw_posts(f)
+        dataset: list[Post] = load_raw_post(f)
         cmis = "\t".join(compute_cmi(dataset))
         print(f'{f.name}\t\t{cmis}')
 
@@ -157,19 +157,40 @@ def compute_cmi(dataset: list[Post]):
     return num_tokens, num_utts, all_cmi, mixed_cmi, code_mix_perc
 
 
+def unique_tokens(data: list[Post]) -> dict[str, set[str]]:
+    bn_wordset = {post.words[i] for post in data for i in range(len(post)) if post.langs[i] == 'bn'}
+    en_wordset = {post.words[i] for post in data for i in range(len(post)) if post.langs[i] == 'en'}
+    return {'bn': bn_wordset, 'en': en_wordset}
+
+
+def perc_tok_overlap(data_comp: list[Post], data_test: list[Post]):
+    comp_set = unique_tokens(data_comp)
+    test_set = unique_tokens(data_test)
+
+    for lang, words in test_set.items():
+        overlap_words = words & comp_set[lang]
+        perc_overlap = len(overlap_words) / len(words)
+        print(lang, "{:.2%}".format(perc_overlap))
+
+
 VOCAB_SIZE = 3000
 
 
 def main():
-    data_dir = Path('./data')
-    data_sources = sorted([path for path in data_dir.iterdir()])
-    print_cmis(data_sources)
-    print_stats(data_sources)
+    data_sources = sorted([path for path in Path('./data').iterdir()])
+    data = [post for f in data_sources for post in load_raw_post(f)]
+    # print_stats(data_sources)
+    # print_cmis(data_sources)
+    prep_path = './prepped_data/'
+    split_write_data(prep_path, data)
 
-    # data = [load_raw_posts(f) for f in data_sources]
-    # data_dir = './prepped_data/'
-    # split_write_data(data_dir, data)
-    # gen_sentpiece_model(vocab_size=VOCAB_SIZE, model_type='bpe')
+    # train, dev, test = get_train_dev_test(prep_path)
+    # print("Percentage of test tokens also in dev")
+    # perc_tok_overlap(dev, test)
+    # print("Percentage of test tokens also in train")
+    # perc_tok_overlap(train, test)
+
+    gen_sentpiece_model(vocab_size=VOCAB_SIZE, model_type='unigram')
 
 
 if __name__ == "__main__":

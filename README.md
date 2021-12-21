@@ -26,24 +26,22 @@ print(rank("This is english"))
 .
 ├── README.md                     
 ├── data                          #
-│   └── ...
 ├── demo_app                      #
-│   └── ...
 ├── eval_output                   #
 │   ├── test_metrics.txt
 │   └── test_predictions.txt
+|
 ├── indic-trans
-│   └── ...
 ├── old_whatsapp_data             #
 ├── prepped_data                  #
 │   ├── dev.txt
 │   ├── test.txt
 │   └── train.txt
+|
 ├── requirements.txt              #
 ├── sentpiece_resources           #
-│   └── ...
 ├── src
-│   ├── LanguageIdentifier.py     #
+│   ├── LanguageIdentifier.py     # 
 │   ├── data_loading.py           #
 │   ├── datasets.py               #
 │   ├── lid_model.py              #
@@ -52,7 +50,6 @@ print(rank("This is english"))
 │   ├── train_test_model.py       #
 │   └── transliterate_bangla.py   #
 └── trained_models
-    └── ...
 ```
 
 

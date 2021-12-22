@@ -15,6 +15,8 @@ from LanguageIdentifier import LanguageIdentifier
 
 LID = LanguageIdentifier()
 print(predict("amar phone e screen shots er option ache"))
+
+>>> [('amar', 'bn'), phone e screen shots er option ache"
 print(rank("This is english")) 
 ```
 `predict` returns a list of tuples containing each word and its most likely language. 
@@ -41,7 +43,7 @@ print(rank("This is english"))
 ├── requirements.txt              # requirements
 ├── sentpiece_resources           # trained sentencepiece vocab and model
 ├── src
-│   ├── LanguageIdentifier.py     # 
+│   ├── LanguageIdentifier.py     # class for end usage of language identifier
 │   ├── data_loading.py           # functions for loading raw files and training the sentencepiece model
 │   ├── datasets.py               # Post, Dataset, PyTorchDataset, and BatchSampler classes
 │   ├── lid_model.py              # full language ID model and training loop
@@ -50,6 +52,7 @@ print(rank("This is english"))
 │   ├── train_test_model.py       # functions for training and testing the model, used in run_training.py
 │   └── transliterate_bangla.py   # ex. of indictrans usage for the future-- unimplemented
 └── trained_models
+    └── trained_lid_model.pth     # the final trained LID model 
 ```
 
 

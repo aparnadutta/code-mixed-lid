@@ -14,13 +14,21 @@ The data used to train the model is the Bangla-English code-mixed data released 
 from LanguageIdentifier import LanguageIdentifier
 
 LID = LanguageIdentifier()
-print(predict("amar phone e screen shots er option ache"))
+print(LID.predict("amar phone e screenshots er option ache"))
+print(LID.rank("amar phone e screenshots er option ache")) 
 
->>> [('amar', 'bn'), phone e screen shots er option ache"
-print(rank("This is english")) 
 ```
-`predict` returns a list of tuples containing each word and its most likely language. 
-`rank` returns ...
+`predict` returns a list of tuples containing each word and its most likely language
+
+`rank` returns a dictionary mapping each language tag to a list of probabilities for each word
+
+```python
+[('amar', 'bn'), ('phone', 'en'), ('e', 'bn'), ('screenshots', 'en'), ('er', 'bn'), ('option', 'en'), ('ache', 'bn')]
+{'bn': [0.9999899864196777, 7.261116115842015e-05, 0.5536323189735413, 0.0007055602036416531, 0.9999716281890869, 0.4643056392669678, 0.9997987151145935],
+'en': [9.930015949066728e-06, 0.999927282333374, 0.44551435112953186, 0.9990161657333374, 9.783412679098547e-06, 0.5293608903884888, 8.509134931955487e-05],
+...}
+
+```
 
 
 ###  Files

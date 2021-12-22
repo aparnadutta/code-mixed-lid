@@ -11,6 +11,9 @@ from pathlib import Path
 
 
 class LanguageIdentifier:
+    """
+    Word-level language identifier
+    """
     def __init__(self, directory_path: Path = "./trained_models/trained_LID_model.pth"):
         model_information_dict = torch.load(directory_path)
         subword_to_idx = sentencepiece_numericalizer(load_sp_model('./sentpiece_resources/spm_user.model'))

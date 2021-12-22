@@ -53,8 +53,8 @@ def main(pretrained_model,
     run_training(lstm_model, training_params, to_train, eval_on_test)
 
 
-PRETRAINED_MODEL = './trained_models/trained_LID_modelE38.pth'
-# PRETRAINED_MODEL = None
+# PRETRAINED_MODEL = './trained_models/trained_LID_modelE36.pth'
+PRETRAINED_MODEL = None
 
 EPOCHS = 40
 SEED = 42
@@ -65,7 +65,7 @@ OPTIMIZER = 'adam'
 LR = 0.1
 WEIGHT_DECAY = 0.00001
 BATCH_SIZE = 64
-EVAL_ON_TEST = False
+EVAL_ON_TEST = True
 
 
 if __name__ == "__main__":

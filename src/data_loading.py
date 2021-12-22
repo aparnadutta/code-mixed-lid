@@ -177,12 +177,12 @@ VOCAB_SIZE = 3000
 
 
 def main():
-    data_sources = sorted([path for path in Path('./data').iterdir()])
-    data = [post for f in data_sources for post in load_raw_post(f)]
-    # print_stats(data_sources)
-    # print_cmis(data_sources)
-    prep_path = './prepped_data/'
-    split_write_data(prep_path, data)
+    # data_sources = sorted([path for path in Path('./data').iterdir()])
+    # data = [post for f in data_sources for post in load_raw_post(f)]
+    # # print_stats(data_sources)
+    # # print_cmis(data_sources)
+    # prep_path = './prepped_data/'
+    # split_write_data(prep_path, data)
 
     # train, dev, test = get_train_dev_test(prep_path)
     # print("Percentage of test tokens also in dev")

@@ -1,12 +1,14 @@
 import time
-from torch.utils.data import DataLoader
+import re
+from tqdm import tqdm
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from tqdm import tqdm
-from src.datasets import BatchSampler, PyTorchLIDDataSet, Post
-import re
-from src.data_loading import VOCAB_SIZE
+from torch.utils.data import DataLoader
+
+from datasets import BatchSampler, PyTorchLIDDataSet
+from data_loading import VOCAB_SIZE
 
 
 def correct_predictions(scores, masks, labels):
@@ -51,7 +53,7 @@ class LIDModel(nn.Module):
     def forward(self, sentence: list[str]):
         raise NotImplemented
 
-    def predict(self, sentence: list[str]) -> Post:
+    def predict(self, sentence: list[str]) -> list[tuple[str, str]]:
         self.eval()
         prep_sent, mask = self.prepare_sentence(sentence)
 
@@ -62,10 +64,11 @@ class LIDModel(nn.Module):
         masked_preds = torch.masked_select(preds, mask)
         lang_preds = [self.idx_to_lang[pred.item()] for pred in masked_preds]
 
-        # zipped_preds = [(word, lang) for word, lang in zip(sentence, lang_preds)]
+        zipped_preds = [(word, lang) for word, lang in zip(sentence, lang_preds)]
 
         self.train()
-        return Post(sentence, lang_preds)
+        return zipped_preds
+        # return Post(sentence, lang_preds)
 
     def rank(self, sentence: list[str]) -> dict[str: list[float]]:
         self.eval()

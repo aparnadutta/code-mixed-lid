@@ -22,11 +22,8 @@ def test_model(data_set, model: LIDModel) -> tuple[list[Post], np.ndarray]:
         tokens, langs = item
         tokens = [w[0] for w in tokens]
         gold_labels = [lang[0] for lang in langs]
-
-        pred_posts = model.predict(tokens)
-        pred_labels = pred_posts.langs
-
-        all_tagged_sents.append(pred_posts)
+        pred_labels = [label for _, label in model.predict(tokens)]
+        all_tagged_sents.append(Post(tokens, pred_labels))
 
         for pred, gold in zip(pred_labels, gold_labels):
             conf_mat[lang_to_idx[pred]][lang_to_idx[gold]] += 1

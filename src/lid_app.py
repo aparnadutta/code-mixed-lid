@@ -1,7 +1,6 @@
 import streamlit as st
 from annotated_text import annotated_text
-from pathlib import Path
-from src.LanguageIdentifier import LanguageIdentifier
+from LanguageIdentifier import LanguageIdentifier
 import pandas as pd
 import altair as alt
 from colour import Color
@@ -88,7 +87,7 @@ def write_web_app():
 
     annotated_text(*[(d['name'], '', d['color']) for code, d in lang_color_dict.items()])
     st.text("")
-    all_sents = get_example_sents('example_sentences.txt')
+    all_sents = get_example_sents('./demo_app/example_sentences.txt')
     rand_sent = random.choice(all_sents)
 
     gen_button = st.checkbox(label='Generate test sentences')
@@ -103,14 +102,17 @@ def write_web_app():
         submit_button = form.form_submit_button(label='Submit')
 
     if submit_button:
-        post = LID.predict(sentence)
+        predictions = LID.predict(sentence)
+        tokens = [word for word, _ in predictions]
+        pred_labels = [label for _, label in predictions]
+
         rank = LID.rank(sentence)
 
         st.subheader('Predicted Labels')
-        annotated_text(*color_label_tokens(post.words, post.langs))
+        annotated_text(*color_label_tokens(tokens, pred_labels))
         st.subheader('Word-level Model Confidence')
         # st.altair_chart(make_conf_chart(output))
-        st.altair_chart(make_rank_chart(post.words, rank))
+        st.altair_chart(make_rank_chart(tokens, rank))
 
 
 if __name__ == '__main__':

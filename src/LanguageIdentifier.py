@@ -1,13 +1,9 @@
 from torchtext.data import sentencepiece_numericalizer, load_sp_model
 
-from src.datasets import Post
-from src.lstm_model import LSTMLIDModel
+from lstm_model import LSTMLIDModel
 from nltk import TreebankWordTokenizer
 import torch
 from pathlib import Path
-
-# To instantiate an instance of the language identifier
-#   LID = LanguageIdentifier(Path("./trained_models/trained_LID_model.pth"))
 
 
 class LanguageIdentifier:
@@ -28,9 +24,17 @@ class LanguageIdentifier:
     def tokenize(self, input_sentence: str) -> list[str]:
         return self.tokenizer.tokenize(input_sentence)
 
-    def predict(self, input_sentence: str) -> Post:
+    def predict(self, input_sentence: str) -> list[tuple[str, str]]:
         tokens = self.tokenize(input_sentence)
         return self.model.predict(tokens)
 
     def rank(self, input_sentence: str) -> dict[str, list]:
-        return self.model.rank(self.tokenize(input_sentence))
+        tokens = self.tokenize(input_sentence)
+        return self.model.rank(tokens)
+
+
+# To instantiate an instance of the language identifier
+# LID = LanguageIdentifier()
+# print(LID.predict("amar phone e screenshots er option ache"))
+# print(LID.rank("amar phone e screenshots er option ache"))
+

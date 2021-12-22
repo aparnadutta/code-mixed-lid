@@ -4,7 +4,7 @@ from typing import Optional
 from torchtext.data import generate_sp_model
 import re
 
-from src.datasets import Post
+from datasets import Post
 from pathlib import Path
 
 

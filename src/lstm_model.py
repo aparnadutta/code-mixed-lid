@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from src.lid_model import LIDModel
+from lid_model import LIDModel
 
 
 DROPOUT = 0.4

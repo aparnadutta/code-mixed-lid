@@ -53,8 +53,8 @@ def main(pretrained_model,
     run_training(lstm_model, training_params, to_train, eval_on_test)
 
 
-# PRETRAINED_MODEL = './trained_models/trained_LID_modelE36.pth'
-PRETRAINED_MODEL = None
+PRETRAINED_MODEL = './trained_models/trained_LID_model.pth'
+# PRETRAINED_MODEL = None
 
 EPOCHS = 40
 SEED = 42

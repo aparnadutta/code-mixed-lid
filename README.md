@@ -25,30 +25,30 @@ print(rank("This is english"))
 ```
 .
 ├── README.md                     
-├── data                          #
-├── demo_app                      #
-├── eval_output                   #
-│   ├── test_metrics.txt
-│   └── test_predictions.txt
+├── data                          # original data from ICON 2015 and 2016
+├── demo_app                      # code for running the local web app, along with example sentences for testing
+├── eval_output                   # results of running the trained model on the test data
+│   ├── test_metrics.txt          # accuracy, precision, recall and f1 of test results
+│   └── test_predictions.txt      # test data tagged with predicted labels
 |
-├── indic-trans
-├── old_whatsapp_data             #
-├── prepped_data                  #
+├── indic-trans                   # submoduled for future use in POS tagging model
+├── old_whatsapp_data             # original ICON 2016 whatsapp data before corrections
+├── prepped_data                  # shuffled data split into train, dev and test
 │   ├── dev.txt
 │   ├── test.txt
 │   └── train.txt
 |
-├── requirements.txt              #
-├── sentpiece_resources           #
+├── requirements.txt              # requirements
+├── sentpiece_resources           # trained sentencepiece vocab and model
 ├── src
 │   ├── LanguageIdentifier.py     # 
-│   ├── data_loading.py           #
-│   ├── datasets.py               #
-│   ├── lid_model.py              #
-│   ├── lstm_model.py             #
-│   ├── run_training.py           #
-│   ├── train_test_model.py       #
-│   └── transliterate_bangla.py   #
+│   ├── data_loading.py           # functions for loading raw files and training the sentencepiece model
+│   ├── datasets.py               # Post, Dataset, PyTorchDataset, and BatchSampler classes
+│   ├── lid_model.py              # full language ID model and training loop
+│   ├── lstm_model.py             # LSTM model that initializes as layers, implements forward method
+│   ├── run_training.py           # train the full model and adjust hyperparameters
+│   ├── train_test_model.py       # functions for training and testing the model, used in run_training.py
+│   └── transliterate_bangla.py   # ex. of indictrans usage for the future-- unimplemented
 └── trained_models
 ```
 

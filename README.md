@@ -27,10 +27,10 @@ print(rank("This is english"))
 ```
 .
 ├── README.md                     
-├── data                          # original data from ICON 2015 and 2016
-├── demo_app                      # code for running the local web app, along with example sentences for testing
-├── eval_output                   # results of running the trained model on the test data
-│   ├── test_metrics.txt          # accuracy, precision, recall and f1 of test results
+├── data                          # original data from ICON 2015 and 2016 (with corrected whatsapp data)
+├── demo_app                      # streamlit web app with example sentences
+├── eval_output                   
+│   ├── test_metrics.txt          # accuracy, precision, recall and f1 evaluated on test data
 │   └── test_predictions.txt      # test data tagged with predicted labels
 |
 ├── indic-trans                   # submoduled for future use in POS tagging model
@@ -43,12 +43,12 @@ print(rank("This is english"))
 ├── requirements.txt              # requirements
 ├── sentpiece_resources           # trained sentencepiece vocab and model
 ├── src
-│   ├── LanguageIdentifier.py     # class for end usage of language identifier
+│   ├── LanguageIdentifier.py     # class for language identifier
 │   ├── data_loading.py           # functions for loading raw files and training the sentencepiece model
 │   ├── datasets.py               # Post, Dataset, PyTorchDataset, and BatchSampler classes
 │   ├── lid_model.py              # full language ID model and training loop
 │   ├── lstm_model.py             # LSTM model that initializes as layers, implements forward method
-│   ├── run_training.py           # train the full model and adjust hyperparameters
+│   ├── run_training.py           # adjust hyperparameters and train the full model
 │   ├── train_test_model.py       # functions for training and testing the model, used in run_training.py
 │   └── transliterate_bangla.py   # ex. of indictrans usage for the future-- unimplemented
 └── trained_models

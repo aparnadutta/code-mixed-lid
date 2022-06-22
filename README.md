@@ -1,7 +1,7 @@
 # Word-level LID for Bangla-English Code-mixed Social Media Data
 ### Final project for COSI 217a - NLP Systems Fall 2021.
 
-This is a model for word-level language identification for code-mixed Bangla-English social media data, using subword embeddings and a BiLSTM. The file structure, training setup, and LSTM architecture are modified from [this](https://github.com/AU-DIS/LSTM_langid) reproduction of Apple's BiLSTM model for short strings. The linked model identifies a single language for a short span of text, while this model identifies a language for each token in the input sentence.
+This is a model for word-level language identification for code-mixed Bangla-English social media data, using subword embeddings and a BiLSTM. The accompanying paper is [here](https://github.com/aparnadutta/code-mixed-lid/blob/main/DuttaAparna_CodeMixedLID.pdf). The file structure, training setup, and LSTM architecture are modified from [this](https://github.com/AU-DIS/LSTM_langid) reproduction of Apple's BiLSTM model for short strings. The linked model identifies a single language for a short span of text, while this model identifies a language for each token in the input sentence.
 
 The subword vocabulary is generated using Google SentencePiece, through the [torchtext](https://pytorch.org/text/stable/data_functional.html) package for PyTorch. The current model is trained using a vocabulary size of 3000, and unigram-based subword embeddings.  
 

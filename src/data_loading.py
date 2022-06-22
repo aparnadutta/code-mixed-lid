@@ -80,7 +80,7 @@ def load_prepped_file(filepath: str) -> list[Post]:
 
 def gen_sentpiece_model(vocab_size,
                         model_type: str = 'unigram',
-                        train_filepath: str = './prepped_data/train.txt',
+                        train_filepath: str = './train_dev_test_data/train.txt',
                         output_filepath: str = './sentpiece_resources/sp_source_data.txt'):
     """
     Uses training data to generate sentencepiece source data. Creates sentencepiece model of provided
@@ -181,7 +181,7 @@ def main():
     # data = [post for f in data_sources for post in load_raw_post(f)]
     # # print_stats(data_sources)
     # # print_cmis(data_sources)
-    # prep_path = './prepped_data/'
+    # prep_path = './train_dev_test_data/'
     # split_write_data(prep_path, data)
 
     # train, dev, test = get_train_dev_test(prep_path)

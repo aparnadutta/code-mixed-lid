@@ -77,7 +77,7 @@ def train_model(data_set: PyTorchLIDDataSet, test_dataset: PyTorchLIDDataSet, li
 
 def run_training(model, training_params, to_train=True, eval_on_test=False):
 
-    train, dev, test = get_train_dev_test('./prepped_data/')
+    train, dev, test = get_train_dev_test('./train_dev_test_data/')
 
     train_dataset = LIDDataset(train)
     dev_dataset = LIDDataset(dev)

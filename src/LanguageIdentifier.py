@@ -1,4 +1,4 @@
-from torchtext.data import sentencepiece_numericalizer, load_sp_model
+from torchtext.data import sentencepiece_numericalizer, load_sp_model, sentencepiece_tokenizer
 
 from lstm_model import LSTMLIDModel
 from nltk import TreebankWordTokenizer
@@ -35,6 +35,6 @@ class LanguageIdentifier:
 
 # To instantiate an instance of the language identifier
 # LID = LanguageIdentifier()
-# print(LID.predict("amar phone e screenshots er option ache"))
-# print(LID.rank("amar phone e screenshots er option ache"))
+# ex_sent = "ami oke plant ta dekhiyechi"
+# print(LID.predict(ex_sent))
 

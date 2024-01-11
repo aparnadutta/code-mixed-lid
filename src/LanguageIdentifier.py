@@ -10,9 +10,9 @@ class LanguageIdentifier:
     """
     Word-level language identifier
     """
-    def __init__(self, directory_path: Path = "./trained_models/trained_LID_model.pth"):
+    def __init__(self, directory_path: Path = "../trained_models/trained_LID_model.pth"):
         model_information_dict = torch.load(directory_path)
-        subword_to_idx = sentencepiece_numericalizer(load_sp_model('./sentpiece_resources/spm_user.model'))
+        subword_to_idx = sentencepiece_numericalizer(load_sp_model('../sentpiece_resources/spm_user.model'))
         lang_to_idx = {'bn': 0, 'en': 1, 'univ': 2, 'ne': 3, 'hi': 4, 'acro': 5, 'mixed': 6, 'undef': 7}
         self.model = LSTMLIDModel(subword_to_idx, lang_to_idx,
                                   model_information_dict['embedding_dim'],
